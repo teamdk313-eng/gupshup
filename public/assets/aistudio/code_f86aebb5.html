@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary": "#ffffff", "outline-variant": "#c7c4d8", "on-error-container": "#93000a", "primary-fixed-dim": "#c3c0ff", "primary-container": "#4f46e5", "on-primary-container": "#dad7ff", "secondary-fixed": "#71f8e4", "inverse-on-surface": "#eaf1ff", "on-tertiary": "#ffffff", "surface-variant": "#d3e4fe", "on-background": "#0b1c30", "on-error": "#ffffff", "on-tertiary-fixed": "#002109", "surface-bright": "#f8f9ff", "on-tertiary-container": "#63f889", "surface-container": "#e5eeff", "secondary-fixed-dim": "#4fdbc8", "surface": "#f8f9ff", "on-surface": "#0b1c30", "surface-container-highest": "#d3e4fe", "on-surface-variant": "#464555", "tertiary-container": "#007030", "tertiary-fixed-dim": "#4ae176", "inverse-primary": "#c3c0ff", "error": "#ba1a1a", "tertiary-fixed": "#6bff8f", "surface-container-lowest": "#ffffff", "on-primary-fixed": "#0f0069", "background": "#f8f9ff", "on-secondary-fixed": "#00201c", "on-primary-fixed-variant": "#3323cc", "on-secondary-fixed-variant": "#005048", "on-primary": "#ffffff", "surface-tint": "#4d44e3", "outline": "#777587", "surface-container-low": "#eff4ff", "secondary": "#006b5f", "inverse-surface": "#213145", "primary": "#3525cd", "on-tertiary-fixed-variant": "#005321", "surface-dim": "#cbdbf5", "tertiary": "#005523", "secondary-container": "#6df5e1", "surface-container-high": "#dce9ff", "error-container": "#ffdad6", "primary-fixed": "#e2dfff", "on-secondary-container": "#006f64" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1rem", "space-md": "1rem", "space-xl": "2rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "gutter": "1rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Inter"], "caption": ["Inter"], "label-md": ["Inter"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "caption-xs": ["Inter"], "headline-lg": ["Inter"], "body-lg": ["Inter"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "caption": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "caption-xs": ["11px", { "lineHeight": "14px", "fontWeight": "500" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-60 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between py-space-lg px-space-md"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-xs"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[22px]">chat</span></div><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Gupshup</span></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary"><a class="flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="discover" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">explore</span><span class="font-label-md text-label-md">Discover</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="search-people" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">chat_bubble</span><span class="font-label-md text-label-md">Chats</span></div><span class="w-5 h-5 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-caption-xs text-caption-xs">3</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="user-profile" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">person</span><span class="font-label-md text-label-md">Profile</span></div></a></nav></div><div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low"><div class="flex items-center gap-space-sm"><div class="relative"><div class="w-10 h-10 rounded-full bg-primary-fixed-dim flex items-center justify-center font-label-md text-label-md text-on-primary-fixed">AR</div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary-fixed-dim ring-2 ring-surface-container-lowest"></span></div><div class="flex flex-col min-w-0"><span class="font-label-md text-label-md text-on-surface truncate">Ali Raza</span><span class="font-caption-xs text-caption-xs text-on-surface-variant truncate">@ali_raza</span></div></div><a class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[18px]">settings</span></a></div></aside><div class="pl-60"><header class="fixed top-0 left-60 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-sm"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-space-sm text-on-surface-variant text-[20px]">search</span><input class="h-10 pl-10 pr-space-md rounded-xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 w-80 transition-all" placeholder="Search messages, people..." type="text"/></div></div><div class="flex items-center gap-space-md"><button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Toast Notification (Top Right Floating) -->
+<div class="fixed top-20 right-8 z-50 flex items-center gap-space-sm px-space-md py-space-sm rounded-xl bg-tertiary-container text-on-tertiary shadow-xl opacity-0 pointer-events-none transition-all duration-300 transform translate-y-[-10px]" id="saveToast">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-md text-label-md">Profile updated successfully</span>
+<button class="ml-space-sm text-on-tertiary/75 hover:text-on-tertiary" onclick="dismissToast()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="w-full max-w-6xl mx-auto px-space-xl py-space-lg flex flex-col gap-space-lg">
+<!-- Breadcrumb & Back Link -->
+<nav class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-caption text-caption">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+<span>Settings</span>
+</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Profile</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-label-md text-label-md">Edit Profile</span>
+</div>
+<a class="inline-flex items-center gap-space-xs text-primary hover:text-on-primary-fixed-variant font-label-md text-label-md group transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] transition-transform group-hover:-translate-x-1">arrow_back</span>
+<span>Back to My Profile</span>
+</a>
+</nav>
+<!-- Header Section -->
+<div class="flex flex-col gap-space-xs pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Edit Profile</h1>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-high font-caption-xs text-caption-xs text-on-surface-variant uppercase tracking-wider">Account Settings</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+        Update your public avatar, name, unique handle, and bio. These details will be visible to your contacts across Gupshup.
+      </p>
+</div>
+<!-- Main Card Bento Grid -->
+<div class="grid grid-cols-12 gap-space-lg">
+<!-- Left Column: Avatar & Quick Summary Card -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(15,23,42,0.04)] p-space-lg flex flex-col items-center text-center">
+<span class="font-label-md text-label-md text-on-surface self-start mb-space-md flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">account_box</span>
+            Profile Photo
+          </span>
+<!-- Avatar with Hover Overlay -->
+<div class="relative group my-space-sm">
+<div class="w-32 h-32 rounded-full overflow-hidden shadow-md ring-4 ring-surface-container">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-alt="A clean, stylish portrait of Ali Raza, a confident smiling South Asian male professional in modern casual tech attire with soft studio lighting and warm indigo-tinted background gradient" id="avatarImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB43oXHNTjyM6oT62S1zBzRtBaz18pf3rlLX2ud2Qpswui5-DezcVEXOoWk_OSulFGUUmp0cMh74AIDcMTqgUZ3G-J77d5I6P5MWv0HhYFTVcWaOlcyj4T9XNp-6l8IASUvW6Fr7xkl6vDcTViJbNVVGjWs6TMdyvS-hgLRctMj88OO-qElcvBgCCFd2nU40O_BV5CNoHV0l2rEnmUZjMSvuA3Ni6sRhsjX2jQu-_Op"/>
+</div>
+<button class="absolute inset-0 rounded-full bg-on-background/40 text-on-primary flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 backdrop-blur-[2px]" onclick="document.getElementById('avatarInput').click()">
+<span class="material-symbols-outlined text-[24px]">photo_camera</span>
+<span class="font-caption-xs text-caption-xs font-semibold mt-1">Upload New</span>
+</button>
+<input accept="image/*" class="hidden" id="avatarInput" onchange="previewAvatar(event)" type="file"/>
+</div>
+<div class="mt-space-sm flex flex-col items-center">
+<span class="font-headline-sm text-headline-sm text-on-surface">Ali Raza</span>
+<span class="font-caption text-caption text-on-surface-variant">Active Member • Gupshup Web</span>
+</div>
+<div class="w-full flex flex-col gap-space-xs mt-space-md pt-space-md border-t border-surface-container">
+<button class="w-full h-12 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center gap-space-xs shadow-sm" onclick="document.getElementById('avatarInput').click()">
+<span class="material-symbols-outlined text-[18px]">upload</span>
+              Change Photo
+            </button>
+<button class="w-full h-10 rounded-xl bg-transparent hover:bg-surface-container-low text-on-surface-variant hover:text-error font-label-md text-label-md transition-colors flex items-center justify-center gap-space-xs" onclick="removeAvatar()">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+              Remove Photo
+            </button>
+</div>
+<p class="font-caption-xs text-caption-xs text-on-surface-variant mt-space-md">
+            JPG, GIF or PNG. Max file size 2MB.<br/>Square aspect ratio (1:1) recommended.
+          </p>
+</div>
+<!-- Identity Status Card -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Verification Status</span>
+<span class="inline-flex items-center gap-1 text-tertiary-container font-caption text-caption font-semibold">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+              Verified
+            </span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">
+            Your Gupshup account was verified via Google Workspace Single Sign-On on October 12, 2024.
+          </p>
+<div class="flex items-center gap-space-xs pt-space-xs text-primary font-caption text-caption hover:underline cursor-pointer">
+<span>Learn about trust &amp; safety</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Form Configuration -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(15,23,42,0.04)] p-space-lg flex flex-col gap-space-lg">
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">General Information</h2>
+<p class="font-caption text-caption text-on-surface-variant">Manage how your name and identity appear in direct conversations.</p>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-lg">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-caption-xs text-caption-xs text-on-surface">Profile Live</span>
+</div>
+</div>
+<!-- Form Fields Container -->
+<div class="flex flex-col gap-space-md">
+<!-- Display Name -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface flex items-center justify-between" for="displayName">
+<span>Display Name</span>
+<span class="font-caption-xs text-caption-xs text-on-surface-variant">Required</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full h-[52px] px-space-md rounded-xl bg-surface-container-low text-on-surface font-body-lg text-body-lg outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all placeholder:text-on-surface-variant" id="displayName" type="text" value="Ali Raza"/>
+<span class="material-symbols-outlined absolute right-space-md text-on-surface-variant text-[20px]">badge</span>
+</div>
+<span class="font-caption-xs text-caption-xs text-on-surface-variant">
+                This is your visible name displayed in contact cards and group chats.
+              </span>
+</div>
+<!-- Username with Live Interactive Validation -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface" for="username">Username</label>
+<!-- Toggle to preview states for reviewers -->
+<button class="font-caption-xs text-caption-xs text-primary hover:underline flex items-center gap-1" onclick="toggleUsernameSimulation()" type="button">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span id="toggleText">Simulate "Taken" state</span>
+</button>
+</div>
+<div class="relative flex items-center">
+<div class="absolute left-space-md font-body-lg text-body-lg text-on-surface-variant font-medium select-none">
+                  @
+                </div>
+<input class="w-full h-[52px] pl-9 pr-12 rounded-xl bg-surface-container-low text-on-surface font-body-lg text-body-lg outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all placeholder:text-on-surface-variant" id="username" oninput="handleUsernameInput(this.value)" type="text" value="ali_raza"/>
+<!-- Status Icon Badge -->
+<div class="absolute right-space-md flex items-center" id="usernameStatusIcon">
+<span class="material-symbols-outlined text-tertiary-container text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Dynamic Validation Banner -->
+<div class="flex items-center gap-space-xs font-caption text-caption text-tertiary-container mt-0.5" id="usernameStatusMessage">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span id="statusMessageText">@ali_raza is available</span>
+</div>
+<span class="font-caption-xs text-caption-xs text-on-surface-variant">
+                Only letters, numbers, and underscores. Once set, can be changed once every 30 days.
+              </span>
+</div>
+<!-- Bio with Live Character Counter -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface" for="userBio">Bio</label>
+<span class="font-caption text-caption text-on-surface-variant font-medium" id="charCounter">38/120</span>
+</div>
+<textarea class="w-full p-space-md rounded-xl bg-surface-container-low text-on-surface font-body-lg text-body-lg outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all resize-none placeholder:text-on-surface-variant" id="userBio" maxlength="120" oninput="updateCharCount(this)" rows="3">Coffee lover, weekend hiker &amp; builder.</textarea>
+<div class="flex items-center justify-between">
+<span class="font-caption-xs text-caption-xs text-on-surface-variant">
+                  Brief description displayed on your profile view and discovery deck.
+                </span>
+<div class="w-24 h-1.5 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-primary-container rounded-full transition-all duration-200" id="charBar" style="width: 31.6%;"></div>
+</div>
+</div>
+</div>
+<!-- Email Address (Linked / Read-only) -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface">Linked Email Address</label>
+<div class="h-[52px] px-space-md rounded-xl bg-surface-container-high/60 flex items-center justify-between select-none">
+<div class="flex items-center gap-space-sm text-on-surface">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">mail</span>
+<span class="font-body-md text-body-md font-medium">ali.raza@gmail.com</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded-lg bg-surface-container-lowest shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+<span class="font-caption-xs text-caption-xs text-on-surface font-semibold">Google Verified</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant" title="Linked via Google OAuth">lock</span>
+</div>
+</div>
+<span class="font-caption-xs text-caption-xs text-on-surface-variant">
+                Primary recovery and authentication address managed via Google Sign-In.
+              </span>
+</div>
+</div>
+<!-- Bottom Action Buttons inside Form Box -->
+<div class="pt-space-md border-t border-surface-container flex items-center justify-between">
+<span class="font-caption text-caption text-on-surface-variant">
+              Changes apply instantly across your mobile and desktop devices.
+            </span>
+<div class="flex items-center gap-space-sm">
+<button class="h-12 px-space-lg rounded-xl bg-transparent hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center" onclick="handleCancel()" type="button">
+                Cancel
+              </button>
+<button class="h-12 px-space-lg rounded-xl bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md shadow-sm transition-all duration-150 flex items-center justify-center gap-space-xs active:scale-[0.98]" id="saveButton" onclick="handleSave()" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Save Changes</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Privacy and Discoverability Preferences Preview -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_2px_8px_rgba(15,23,42,0.04)] p-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Discoverability via Handle</span>
+<span class="font-caption text-caption text-on-surface-variant">Allow people to find and message you using @ali_raza</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  let isSimulatedTaken = false;
+  const originalValues = {
+    displayName: "Ali Raza",
+    username: "ali_raza",
+    bio: "Coffee lover, weekend hiker & builder."
+  };
+
+  function updateCharCount(textarea) {
+    const count = textarea.value.length;
+    const max = textarea.getAttribute("maxlength") || 120;
+    const counter = document.getElementById("charCounter");
+    const bar = document.getElementById("charBar");
+    
+    counter.textContent = `${count}/${max}`;
+    const percent = Math.min((count / max) * 100, 100);
+    bar.style.width = `${percent}%`;
+
+    if (count >= 110) {
+      counter.classList.add("text-error");
+      bar.classList.add("bg-error");
+      bar.classList.remove("bg-primary-container");
+    } else {
+      counter.classList.remove("text-error");
+      bar.classList.remove("bg-error");
+      bar.classList.add("bg-primary-container");
+    }
+  }
+
+  function handleUsernameInput(val) {
+    const clean = val.replace(/[^a-zA-Z0-9_]/g, '');
+    const statusIcon = document.getElementById("usernameStatusIcon");
+    const statusMsg = document.getElementById("usernameStatusMessage");
+    const statusText = document.getElementById("statusMessageText");
+
+    if (clean.length < 3) {
+      statusIcon.innerHTML = `<span class="material-symbols-outlined text-error text-[20px]">cancel</span>`;
+      statusMsg.className = "flex items-center gap-space-xs font-caption text-caption text-error mt-0.5";
+      statusText.textContent = "Handle must be at least 3 characters";
+      return;
+    }
+
+    if (isSimulatedTaken) {
+      statusIcon.innerHTML = `<span class="material-symbols-outlined text-error text-[20px]">error</span>`;
+      statusMsg.className = "flex items-center gap-space-xs font-caption text-caption text-error mt-0.5";
+      statusText.textContent = `@${clean} is already taken by another user`;
+    } else {
+      statusIcon.innerHTML = `<span class="material-symbols-outlined text-tertiary-container text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>`;
+      statusMsg.className = "flex items-center gap-space-xs font-caption text-caption text-tertiary-container mt-0.5";
+      statusText.textContent = `@${clean} is available`;
+    }
+  }
+
+  function toggleUsernameSimulation() {
+    isSimulatedTaken = !isSimulatedTaken;
+    const toggleBtnText = document.getElementById("toggleText");
+    const usernameInput = document.getElementById("username");
+    
+    if (isSimulatedTaken) {
+      toggleBtnText.textContent = 'Simulate "Available" state';
+    } else {
+      toggleBtnText.textContent = 'Simulate "Taken" state';
+    }
+    handleUsernameInput(usernameInput.value);
+  }
+
+  function previewAvatar(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('avatarImage').src = e.target.result;
+        showToast("Photo uploaded successfully");
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeAvatar() {
+    const avatar = document.getElementById('avatarImage');
+    avatar.src = "placeholder";
+    showToast("Profile photo removed");
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById("saveToast");
+    if (message) {
+      toast.querySelector("span:nth-child(2)").textContent = message;
+    }
+    toast.classList.remove("opacity-0", "pointer-events-none", "translate-y-[-10px]");
+    toast.classList.add("opacity-100", "translate-y-0");
+
+    setTimeout(() => {
+      dismissToast();
+    }, 4000);
+  }
+
+  function dismissToast() {
+    const toast = document.getElementById("saveToast");
+    toast.classList.add("opacity-0", "pointer-events-none", "translate-y-[-10px]");
+    toast.classList.remove("opacity-100", "translate-y-0");
+  }
+
+  function handleSave() {
+    const btn = document.getElementById("saveButton");
+    const originalContent = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Saving...</span>`;
+    
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = originalContent;
+      showToast("Profile updated successfully");
+    }, 600);
+  }
+
+  function handleCancel() {
+    document.getElementById("displayName").value = originalValues.displayName;
+    document.getElementById("username").value = originalValues.username;
+    document.getElementById("userBio").value = originalValues.bio;
+    updateCharCount(document.getElementById("userBio"));
+    handleUsernameInput(originalValues.username);
+  }
+</script></main></div></body></html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary": "#ffffff", "outline-variant": "#c7c4d8", "on-error-container": "#93000a", "primary-fixed-dim": "#c3c0ff", "primary-container": "#4f46e5", "on-primary-container": "#dad7ff", "secondary-fixed": "#71f8e4", "inverse-on-surface": "#eaf1ff", "on-tertiary": "#ffffff", "surface-variant": "#d3e4fe", "on-background": "#0b1c30", "on-error": "#ffffff", "on-tertiary-fixed": "#002109", "surface-bright": "#f8f9ff", "on-tertiary-container": "#63f889", "surface-container": "#e5eeff", "secondary-fixed-dim": "#4fdbc8", "surface": "#f8f9ff", "on-surface": "#0b1c30", "surface-container-highest": "#d3e4fe", "on-surface-variant": "#464555", "tertiary-container": "#007030", "tertiary-fixed-dim": "#4ae176", "inverse-primary": "#c3c0ff", "error": "#ba1a1a", "tertiary-fixed": "#6bff8f", "surface-container-lowest": "#ffffff", "on-primary-fixed": "#0f0069", "background": "#f8f9ff", "on-secondary-fixed": "#00201c", "on-primary-fixed-variant": "#3323cc", "on-secondary-fixed-variant": "#005048", "on-primary": "#ffffff", "surface-tint": "#4d44e3", "outline": "#777587", "surface-container-low": "#eff4ff", "secondary": "#006b5f", "inverse-surface": "#213145", "primary": "#3525cd", "on-tertiary-fixed-variant": "#005321", "surface-dim": "#cbdbf5", "tertiary": "#005523", "secondary-container": "#6df5e1", "surface-container-high": "#dce9ff", "error-container": "#ffdad6", "primary-fixed": "#e2dfff", "on-secondary-container": "#006f64" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1rem", "space-md": "1rem", "space-xl": "2rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "gutter": "1rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Inter"], "caption": ["Inter"], "label-md": ["Inter"], "headline-md": ["Inter"], "headline-sm": ["Inter"], "caption-xs": ["Inter"], "headline-lg": ["Inter"], "body-lg": ["Inter"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "caption": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "caption-xs": ["11px", { "lineHeight": "14px", "fontWeight": "500" }], "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-60 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between py-space-lg px-space-md"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-xs"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[22px]">chat</span></div><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Gupshup</span></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary"><a class="flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="discover" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">explore</span><span class="font-label-md text-label-md">Discover</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="search-people" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">chat_bubble</span><span class="font-label-md text-label-md">Chats</span></div><span class="w-5 h-5 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-caption-xs text-caption-xs">3</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="user-profile" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">person</span><span class="font-label-md text-label-md">Profile</span></div></a></nav></div><div class="flex items-center justify-between p-space-sm rounded-xl bg-surface-container-low"><div class="flex items-center gap-space-sm"><div class="relative"><div class="w-10 h-10 rounded-full bg-primary-fixed-dim flex items-center justify-center font-label-md text-label-md text-on-primary-fixed">AR</div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary-fixed-dim ring-2 ring-surface-container-lowest"></span></div><div class="flex flex-col min-w-0"><span class="font-label-md text-label-md text-on-surface truncate">Ali Raza</span><span class="font-caption-xs text-caption-xs text-on-surface-variant truncate">@ali_raza</span></div></div><a class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[18px]">settings</span></a></div></aside><div class="pl-60"><header class="fixed top-0 left-60 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-sm"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-space-sm text-on-surface-variant text-[20px]">search</span><input class="h-10 pl-10 pr-space-md rounded-xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 w-80 transition-all" placeholder="Search messages, people..." type="text"/></div></div><div class="flex items-center gap-space-md"><button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<div class="px-space-xl py-space-lg flex flex-col gap-space-lg max-w-6xl mx-auto w-full">
+<!-- Breadcrumb & Back Action -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-caption text-caption">
+<a class="flex items-center gap-space-xs hover:text-primary transition-colors" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span>Settings</span>
+</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<span class="hover:text-primary cursor-pointer transition-colors">Privacy &amp; Safety</span>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<span class="font-label-md text-label-md text-on-surface">Blocked Users</span>
+</div>
+<a class="flex items-center gap-space-xs px-space-md py-space-xs rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors shadow-sm" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Back to Settings</span>
+</a>
+</div>
+<!-- Header Section with Decorative Stat Badge -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-low p-space-xl shadow-sm">
+<div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs max-w-2xl">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">block</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Blocked Users</h1>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Blocked users cannot send you messages, view your online status, or start audio/video calls with you. They won't be notified when you block or unblock them.
+          </p>
+</div>
+<div class="flex items-center gap-space-md self-start md:self-auto">
+<div class="flex flex-col items-end bg-surface-container-lowest px-space-md py-space-sm rounded-xl shadow-sm">
+<span class="font-caption-xs text-caption-xs text-on-surface-variant uppercase tracking-wider font-semibold">Active Restrictions</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-md text-headline-md text-primary font-bold" id="active-count-number">3</span>
+<span class="font-caption text-caption text-on-surface-variant">contacts</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-primary-container/5 blur-3xl pointer-events-none"></div>
+</div>
+<!-- Filter & State Switcher Section -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md">
+<!-- Search and Quick Filter -->
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full h-12 pl-12 pr-space-md rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md shadow-sm outline-none focus:ring-2 focus:ring-primary-container/30 transition-all" id="search-input" placeholder="Search blocked users by name or handle..." type="text"/>
+</div>
+<!-- Preview State Switcher Tabs (Demo Helper) -->
+<div class="flex items-center p-1 bg-surface-container rounded-xl shadow-inner self-start md:self-auto">
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm transition-all" id="tab-active" onclick="switchTab('active')">
+<span class="material-symbols-outlined text-[18px]">list</span>
+<span>Blocked List</span>
+<span class="px-space-xs py-0.5 rounded-full bg-primary-container text-on-primary font-caption-xs text-caption-xs font-semibold" id="badge-tab-count">3</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" id="tab-empty" onclick="switchTab('empty')">
+<span class="material-symbols-outlined text-[18px]">sentiment_satisfied</span>
+<span>Empty State</span>
+</button>
+</div>
+</div>
+<!-- Primary Content View -->
+<div class="relative" id="content-container">
+<!-- Active List View Container -->
+<div class="flex flex-col gap-space-sm" id="view-active-list">
+<!-- Table Column Labels (Editorial Desktop Style) -->
+<div class="grid grid-cols-12 px-space-lg py-space-xs text-on-surface-variant font-caption text-caption font-semibold">
+<div class="col-span-6 uppercase tracking-wider">User Details</div>
+<div class="col-span-3 uppercase tracking-wider">Restriction Date</div>
+<div class="col-span-3 text-right uppercase tracking-wider">Action</div>
+</div>
+<!-- Row 1: Daniyal Sheikh -->
+<div class="group flex flex-col md:grid md:grid-cols-12 items-center px-space-lg py-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors rounded-xl shadow-sm gap-space-md md:gap-0" id="row-daniyal">
+<div class="col-span-6 flex items-center gap-space-md w-full">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm bg-surface-container" data-alt="Editorial candid portrait of a stylish young South Asian man named Daniyal wearing an olive minimalist linen shirt, cinematic soft daylight, neutral studio background with subtle indigo hue, shot on 35mm lens with sharp crisp focus and natural skin texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD54ZHmEGU-D_C1uMkObRRmLD4V0gNajwUQDMpoGvM2gVpb9Nwmgz1U00ceR2dRdmmwBet2jn6iaoXn_cY0BcMZq-cwKVAXwWoZiT0JSU96xuu0urPV0uW8HRkXpJNYgUCzQ9pnMTtoZqgYc_BJ85XIXVLqS1XiFrGnWS2j-Hj9cDLwcvkdLED0WSbrThHsHt83Zj-I4AFcj9flUrUEk2UogOrteJgu6yAGEfMKyCd9"/>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-error-container text-on-error-container flex items-center justify-center shadow">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">block</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate user-name">Daniyal Sheikh</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container font-caption-xs text-caption-xs text-on-surface-variant">Restricted</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant truncate user-handle">@dani_sheikh</span>
+</div>
+</div>
+<div class="col-span-3 flex items-center gap-space-xs w-full text-on-surface-variant font-body-md text-body-md">
+<span class="material-symbols-outlined text-[18px] text-outline">calendar_today</span>
+<span>Blocked on Oct 14, 2026</span>
+</div>
+<div class="col-span-3 flex items-center justify-end w-full gap-space-sm">
+<button class="h-10 px-space-lg rounded-xl bg-surface hover:bg-primary hover:text-on-primary text-on-surface font-label-md text-label-md transition-all flex items-center gap-space-xs shadow-sm hover:shadow" onclick="triggerUnblock('Daniyal Sheikh', 'row-daniyal')">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+<span>Unblock</span>
+</button>
+</div>
+</div>
+<!-- Row 2: Hamza Ali -->
+<div class="group flex flex-col md:grid md:grid-cols-12 items-center px-space-lg py-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors rounded-xl shadow-sm gap-space-md md:gap-0" id="row-hamza">
+<div class="col-span-6 flex items-center gap-space-md w-full">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm bg-surface-container" data-alt="Modern candid street photography portrait of Hamza, a creative professional in his late 20s wearing glasses and a dark indigo crewneck sweater, ambient architectural city background with deep teal and indigo lighting accents, editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8jrV4vDHmDesEqh6Ut_laQ-F1DNC-I5GKdS1yF-mEv2ctILndx8HO2wBZegLGo6n5H280diBr11XV1uMQpCfX2iLj6UcZzgqia4WUxDhrj7c_gQfm377ERXiCXgvFEjMYIiJoTlRGdyWA4-61VoorE61zRG19hYOyhG7s_Av1X0l1yZvpwTO_clB2LjTnWiN0_QbWV81wj5Gmi6JY6Td3cdxrZwu6zu7DNlFFrpYF"/>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-error-container text-on-error-container flex items-center justify-center shadow">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">block</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate user-name">Hamza Ali</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container font-caption-xs text-caption-xs text-on-surface-variant">Restricted</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant truncate user-handle">@hamza_ali</span>
+</div>
+</div>
+<div class="col-span-3 flex items-center gap-space-xs w-full text-on-surface-variant font-body-md text-body-md">
+<span class="material-symbols-outlined text-[18px] text-outline">calendar_today</span>
+<span>Blocked on Sep 28, 2026</span>
+</div>
+<div class="col-span-3 flex items-center justify-end w-full gap-space-sm">
+<button class="h-10 px-space-lg rounded-xl bg-surface hover:bg-primary hover:text-on-primary text-on-surface font-label-md text-label-md transition-all flex items-center gap-space-xs shadow-sm hover:shadow" onclick="triggerUnblock('Hamza Ali', 'row-hamza')">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+<span>Unblock</span>
+</button>
+</div>
+</div>
+<!-- Row 3: Usman Tariq -->
+<div class="group flex flex-col md:grid md:grid-cols-12 items-center px-space-lg py-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors rounded-xl shadow-sm gap-space-md md:gap-0" id="row-usman">
+<div class="col-span-6 flex items-center gap-space-md w-full">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm bg-surface-container" data-alt="Editorial portrait of Usman Tariq, a smiling young man in a clean white tee in a bright sunny room, cinematic light flare, crisp focus on facial features, neutral modern studio interior with subtle cool gray and slate shadow gradations." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC72hKM8E8nBojL9AiQdZzXMjEkH0fAwByMEyaZGPUD0kwI5c5njORc5qu1B81Um3Sc9pVWYrCmb_W3ag5fidTHd1hCuc7RClSRyccUKYmUw3ClRsoZrHKga6M1tyfwFay5Lrjh0nnNHTn-E5tD4nDrXQDpaMkACgiu-4ci_Nir5Vgg8LpnzsPBoucFhJrVpiRglbX8syRHm8qfUU9sg0EVY6XibCug8ylRTE5HDuaw"/>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-error-container text-on-error-container flex items-center justify-center shadow">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">block</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate user-name">Usman Tariq</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container font-caption-xs text-caption-xs text-on-surface-variant">Restricted</span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant truncate user-handle">@usman_t</span>
+</div>
+</div>
+<div class="col-span-3 flex items-center gap-space-xs w-full text-on-surface-variant font-body-md text-body-md">
+<span class="material-symbols-outlined text-[18px] text-outline">calendar_today</span>
+<span>Blocked on Aug 05, 2026</span>
+</div>
+<div class="col-span-3 flex items-center justify-end w-full gap-space-sm">
+<button class="h-10 px-space-lg rounded-xl bg-surface hover:bg-primary hover:text-on-primary text-on-surface font-label-md text-label-md transition-all flex items-center gap-space-xs shadow-sm hover:shadow" onclick="triggerUnblock('Usman Tariq', 'row-usman')">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+<span>Unblock</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empty State View (Initially Hidden or toggled via preview switch) -->
+<div class="hidden flex-col items-center justify-center p-space-xl bg-surface-container-lowest rounded-xl shadow-sm text-center py-20" id="view-empty-state">
+<div class="relative mb-space-lg">
+<div class="w-24 h-24 rounded-full bg-surface-container flex items-center justify-center text-primary mx-auto">
+<span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<div class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-space-xs">No blocked users</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm mb-space-lg">
+          You haven't blocked anyone yet. Your direct messages and calls are clear and accessible.
+        </p>
+<a class="inline-flex items-center gap-space-sm h-12 px-space-xl rounded-xl bg-primary-container text-on-primary font-label-md text-label-md shadow-md hover:bg-primary transition-all" data-path="search-people" href="#">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span>Explore Messages</span>
+</a>
+</div>
+<!-- Search No Results Notice -->
+<div class="hidden flex-col items-center justify-center p-space-xl bg-surface-container-lowest rounded-xl text-center py-12" id="view-no-search-results">
+<span class="material-symbols-outlined text-outline text-[40px] mb-space-sm">search_off</span>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-space-xs">No matching contacts</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">We couldn't find any blocked users matching your query.</p>
+</div>
+</div>
+<!-- Security Information Footer Note -->
+<div class="p-space-lg rounded-xl bg-surface-container-low flex items-start gap-space-md">
+<span class="material-symbols-outlined text-primary text-[22px] shrink-0 mt-0.5">info</span>
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface">Need help managing your privacy?</span>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          You can also manage who can add you to group chats, see your read receipts, or reach you through your phone number directly in <a class="text-primary underline font-medium" href="#">Privacy Preferences</a>.
+        </p>
+</div>
+</div>
+</div>
+<!-- Bottom Floating Toast Notification -->
+<div class="fixed bottom-space-xl right-space-xl z-50 flex items-center justify-between gap-space-lg bg-inverse-surface text-inverse-on-surface px-space-lg py-space-md rounded-xl shadow-xl transition-all duration-300 transform translate-y-0 opacity-100 max-w-md" id="toast-notification">
+<div class="flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px] font-bold">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-inverse-on-surface leading-snug" id="toast-text">Daniyal unblocked</span>
+<span class="font-caption-xs text-caption-xs text-outline-variant">They can now message you again</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-sm py-1 rounded-lg text-secondary-fixed hover:bg-surface-container-highest/20 font-label-md text-label-md transition-colors" onclick="undoUnblock()">
+        Undo
+      </button>
+<button class="w-7 h-7 flex items-center justify-center rounded-lg text-outline-variant hover:text-inverse-on-surface hover:bg-surface-container-highest/20 transition-colors" onclick="hideToast()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  let lastUnblockedRowId = 'row-daniyal';
+  let activeCount = 3;
+
+  function switchTab(mode) {
+    const tabActive = document.getElementById('tab-active');
+    const tabEmpty = document.getElementById('tab-empty');
+    const viewList = document.getElementById('view-active-list');
+    const viewEmpty = document.getElementById('view-empty-state');
+    const noResults = document.getElementById('view-no-search-results');
+
+    if (mode === 'empty') {
+      tabEmpty.className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm transition-all';
+      tabActive.className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all';
+      viewList.classList.add('hidden');
+      noResults.classList.add('hidden');
+      viewEmpty.classList.remove('hidden');
+    } else {
+      tabActive.className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm transition-all';
+      tabEmpty.className = 'flex items-center gap-space-xs px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all';
+      viewEmpty.classList.add('hidden');
+      viewList.classList.remove('hidden');
+    }
+  }
+
+  function triggerUnblock(name, rowId) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+
+    lastUnblockedRowId = rowId;
+    row.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(20px)';
+
+    setTimeout(() => {
+      row.classList.add('hidden');
+      activeCount = Math.max(0, activeCount - 1);
+      updateCounts();
+
+      if (activeCount === 0) {
+        switchTab('empty');
+      }
+    }, 250);
+
+    const firstName = name.split(' ')[0];
+    showToast(firstName + ' unblocked');
+  }
+
+  function undoUnblock() {
+    if (!lastUnblockedRowId) return;
+    const row = document.getElementById(lastUnblockedRowId);
+    if (!row) return;
+
+    switchTab('active');
+    row.classList.remove('hidden');
+    setTimeout(() => {
+      row.style.opacity = '1';
+      row.style.transform = 'translateX(0)';
+    }, 10);
+
+    activeCount += 1;
+    updateCounts();
+    hideToast();
+  }
+
+  function updateCounts() {
+    const numEl = document.getElementById('active-count-number');
+    const badgeEl = document.getElementById('badge-tab-count');
+    if (numEl) numEl.textContent = activeCount;
+    if (badgeEl) badgeEl.textContent = activeCount;
+  }
+
+  function showToast(text) {
+    const toast = document.getElementById('toast-notification');
+    const toastText = document.getElementById('toast-text');
+    if (toastText) toastText.textContent = text;
+    if (toast) {
+      toast.classList.remove('translate-y-16', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+    }
+  }
+
+  function hideToast() {
+    const toast = document.getElementById('toast-notification');
+    if (toast) {
+      toast.classList.add('translate-y-16', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }
+  }
+
+  // Real-time quick search filtering
+  document.getElementById('search-input')?.addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#view-active-list [id^="row-"]');
+    const noResults = document.getElementById('view-no-search-results');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+      const name = row.querySelector('.user-name')?.textContent.toLowerCase() || '';
+      const handle = row.querySelector('.user-handle')?.textContent.toLowerCase() || '';
+      if (name.includes(query) || handle.includes(query)) {
+        row.style.display = 'flex';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    if (visibleCount === 0 && query !== '') {
+      noResults?.classList.remove('hidden');
+    } else {
+      noResults?.classList.add('hidden');
+    }
+  });
+</script></main></div></body></html>

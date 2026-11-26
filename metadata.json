@@ -1,0 +1,6 @@
+{
+  "name": "Gupshup",
+  "description": "Talk to anyone, instantly. A crisp, tactile 1-to-1 messaging app with text, voice notes, photo sharing, Google Drive attachments, and High Thinking Mode conversation insights.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

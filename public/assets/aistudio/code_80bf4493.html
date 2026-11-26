@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed": "#00201c", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "on-secondary-container": "#006f64", "surface-container": "#e5eeff", "surface-variant": "#d3e4fe", "inverse-primary": "#c3c0ff", "tertiary": "#005523", "tertiary-container": "#007030", "surface-tint": "#4d44e3", "on-surface-variant": "#464555", "surface-bright": "#f8f9ff", "error": "#ba1a1a", "primary": "#3525cd", "on-background": "#0b1c30", "surface-container-highest": "#d3e4fe", "surface": "#f8f9ff", "outline": "#777587", "on-primary-fixed": "#0f0069", "primary-fixed-dim": "#c3c0ff", "surface-dim": "#cbdbf5", "on-primary-fixed-variant": "#3323cc", "secondary-fixed-dim": "#4fdbc8", "primary-container": "#4f46e5", "primary-fixed": "#e2dfff", "tertiary-fixed": "#6bff8f", "inverse-surface": "#213145", "on-secondary": "#ffffff", "surface-container-low": "#eff4ff", "secondary-container": "#6df5e1", "surface-container-high": "#dce9ff", "on-secondary-fixed-variant": "#005048", "secondary-fixed": "#71f8e4", "tertiary-fixed-dim": "#4ae176", "on-error-container": "#93000a", "on-primary-container": "#dad7ff", "secondary": "#006b5f", "surface-container-lowest": "#ffffff", "on-tertiary-fixed": "#002109", "outline-variant": "#c7c4d8", "on-surface": "#0b1c30", "on-error": "#ffffff", "background": "#f8f9ff", "on-primary": "#ffffff", "on-tertiary-container": "#63f889", "on-tertiary-fixed-variant": "#005321", "inverse-on-surface": "#eaf1ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-md": "1rem", "space-xl": "2rem", "space-sm": "0.5rem", "gutter": "1rem", "margin": "1rem", "space-xs": "0.25rem", "space-lg": "1.5rem" }, fontFamily: { "body-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "caption-xs": ["Inter"], "caption": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "label-md": ["Inter"] }, fontSize: { "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "caption-xs": ["11px", { lineHeight: "14px", fontWeight: "500" }], "caption": ["13px", { lineHeight: "18px", fontWeight: "400" }], "headline-lg": ["28px", { lineHeight: "36px", fontWeight: "700" }], "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }], "label-md": ["14px", { lineHeight: "20px", fontWeight: "600" }] } } } }</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100%; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface text-on-surface flex flex-col min-h-screen pt-safe pb-safe"><main class="flex-1 flex flex-col relative w-full bg-surface"><div class="flex flex-col w-full px-margin pb-safe">
+<!-- Top App Navigation / Progress Bar -->
+<div class="flex items-center justify-between py-space-sm mb-space-sm">
+<button aria-label="Go back" class="w-12 h-12 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<!-- Mini Step Dots Indicator -->
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="w-5 h-2 rounded-full bg-primary-container"></span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+</div>
+<button aria-label="Help" class="w-12 h-12 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+</div>
+<!-- Header Area with Chip and Welcoming Headline -->
+<div class="flex flex-col items-center text-center space-y-space-xs mb-space-lg">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-md text-caption-xs uppercase tracking-wider">
+<span class="material-symbols-outlined text-[14px]">spark</span>
+      Almost there
+    </div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+      Choose your username
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">
+      This is how others will find you. You can change it later.
+    </p>
+</div>
+<!-- User Profile Sync Preview Card -->
+<div class="relative flex flex-col items-center mb-space-lg">
+<div class="relative group">
+<!-- Outer soft aura glow -->
+<div class="absolute -inset-1 rounded-full bg-primary-fixed opacity-60 blur-sm"></div>
+<!-- Avatar container -->
+<div class="relative w-24 h-24 rounded-full overflow-hidden shadow-sm bg-surface-container-lowest flex items-center justify-center p-0.5">
+<img alt="Ali Raza" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaQiji5_Cr4Eehc6hPoUMqXCF-xc9mgALLgoWdoPrGg2BSL466EYpxm5_VARuLqvpzYhQYuWntvBTWH2JEA8Xpp4LL5UIZvucCixdkoQOF-E0ODY2VnSnIZNonOTP4CAOnmvwLva8CJNlBnfzzyFpz87ObKPhyqAIRSv0WNVGePdouKJE4rBsWy4rywuNUgL1c3zTvxe8Z2TSiLJEVpECQfNPk3cUFO95o9Vs3S1VW"/>
+</div>
+<!-- Google badge stamp indicator -->
+<div class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-surface-container-lowest shadow-md flex items-center justify-center p-1" title="Connected with Google">
+<svg class="w-4 h-4" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path>
+</svg>
+</div>
+</div>
+<div class="mt-space-sm text-center">
+<div class="font-headline-sm text-headline-sm text-on-surface">Ali Raza</div>
+<div class="font-caption text-caption text-on-surface-variant flex items-center justify-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-tertiary">verified</span>
+        Google Account verified
+      </div>
+</div>
+</div>
+<!-- Interactive Username Input Container -->
+<div class="flex flex-col space-y-space-xs mb-space-lg">
+<div class="flex justify-between items-center px-1">
+<label class="font-label-md text-label-md text-on-surface" for="username-input">
+        Choose Username
+      </label>
+<span class="font-caption-xs text-caption-xs text-on-surface-variant tracking-wide">
+        Required
+      </span>
+</div>
+<!-- Active Input Field (Available state) -->
+<div class="relative flex items-center h-[52px] w-full rounded-[14px] bg-surface-container-lowest shadow-sm transition-all duration-200">
+<div class="flex items-center pl-4 pr-1 text-on-surface-variant font-headline-sm select-none">
+        @
+      </div>
+<input autocomplete="off" class="w-full h-full bg-transparent font-body-lg text-body-lg text-on-surface placeholder:text-outline-variant focus:outline-none pr-10" id="username-input" placeholder="your_handle" spellcheck="false" type="text" value="ali_raza"/>
+<!-- Dynamic feedback icon -->
+<div class="absolute right-3.5 flex items-center justify-center">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-fixed font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Live Available Indicator Feedback -->
+<div class="flex items-center gap-1.5 px-1 pt-1 text-tertiary">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-caption text-caption font-semibold">@ali_raza is available</span>
+</div>
+<!-- Form Specification Helper Text -->
+<p class="font-caption text-caption text-on-surface-variant px-1 leading-relaxed">
+      3-20 characters. Lowercase letters, numbers, dot and underscore only.
+    </p>
+</div>
+<!-- Realtime State Previews / UX Status Card -->
+<div class="rounded-xl bg-surface-container-low p-3.5 space-y-2.5 mb-space-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-caption-xs text-on-surface-variant uppercase tracking-wider">
+        Validation States
+      </span>
+<span class="inline-flex items-center gap-1 font-caption-xs text-caption-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Live checks
+      </span>
+</div>
+<!-- State 1: Checking (Simulated Spinner) -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-2 min-w-0">
+<svg class="animate-spin h-4 w-4 text-primary-container shrink-0" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+</svg>
+<span class="font-body-md text-body-md text-on-surface truncate">@ali</span>
+</div>
+<span class="font-caption text-caption text-on-primary-fixed-variant shrink-0 ml-2">Checking availability...</span>
+</div>
+<!-- State 2: Taken Alert State -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-2 min-w-0">
+<div class="w-4 h-4 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[13px] text-error font-bold">close</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface line-through opacity-70 truncate">@aliraza</span>
+</div>
+<span class="font-caption text-caption text-error font-medium shrink-0 ml-2">That username is already taken</span>
+</div>
+<!-- Suggestions Pill Carousel -->
+<div class="pt-1">
+<div class="font-caption-xs text-caption-xs text-on-surface-variant mb-1.5">Quick picks for you:</div>
+<div class="flex items-center gap-1.5 flex-wrap">
+<button class="suggestion-chip px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-variant active:scale-95 text-on-surface font-caption text-caption transition-all" type="button">
+          @ali_raza99
+        </button>
+<button class="suggestion-chip px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-variant active:scale-95 text-on-surface font-caption text-caption transition-all" type="button">
+          @iam_aliraza
+        </button>
+<button class="suggestion-chip px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-variant active:scale-95 text-on-surface font-caption text-caption transition-all" type="button">
+          @raza_ali
+        </button>
+</div>
+</div>
+</div>
+<!-- Primary Action & Privacy Reassurance -->
+<div class="mt-auto pt-space-xs pb-space-md flex flex-col space-y-space-sm">
+<button class="w-full h-12 px-space-lg rounded-[14px] bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-md hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer" id="continue-button" type="button">
+<span>Continue</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<div class="flex items-center justify-center gap-1.5 text-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-caption-xs text-caption-xs">End-to-end encrypted chats on Gupshup</span>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const input = document.getElementById('username-input');
+    const chips = document.querySelectorAll('.suggestion-chip');
+    
+    if (chips && input) {
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          const val = chip.textContent.trim().replace('@', '');
+          input.value = val;
+          input.focus();
+        });
+      });
+    }
+
+    const continueBtn = document.getElementById('continue-button');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        continueBtn.innerHTML = `
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Creating your profile...</span>
+        `;
+      });
+    }
+  })();
+</script></main></body></html>

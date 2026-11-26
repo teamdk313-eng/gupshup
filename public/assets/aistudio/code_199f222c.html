@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed": "#00201c", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "on-secondary-container": "#006f64", "surface-container": "#e5eeff", "surface-variant": "#d3e4fe", "inverse-primary": "#c3c0ff", "tertiary": "#005523", "tertiary-container": "#007030", "surface-tint": "#4d44e3", "on-surface-variant": "#464555", "surface-bright": "#f8f9ff", "error": "#ba1a1a", "primary": "#3525cd", "on-background": "#0b1c30", "surface-container-highest": "#d3e4fe", "surface": "#f8f9ff", "outline": "#777587", "on-primary-fixed": "#0f0069", "primary-fixed-dim": "#c3c0ff", "surface-dim": "#cbdbf5", "on-primary-fixed-variant": "#3323cc", "secondary-fixed-dim": "#4fdbc8", "primary-container": "#4f46e5", "primary-fixed": "#e2dfff", "tertiary-fixed": "#6bff8f", "inverse-surface": "#213145", "on-secondary": "#ffffff", "surface-container-low": "#eff4ff", "secondary-container": "#6df5e1", "surface-container-high": "#dce9ff", "on-secondary-fixed-variant": "#005048", "secondary-fixed": "#71f8e4", "tertiary-fixed-dim": "#4ae176", "on-error-container": "#93000a", "on-primary-container": "#dad7ff", "secondary": "#006b5f", "surface-container-lowest": "#ffffff", "on-tertiary-fixed": "#002109", "outline-variant": "#c7c4d8", "on-surface": "#0b1c30", "on-error": "#ffffff", "background": "#f8f9ff", "on-primary": "#ffffff", "on-tertiary-container": "#63f889", "on-tertiary-fixed-variant": "#005321", "inverse-on-surface": "#eaf1ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-md": "1rem", "space-xl": "2rem", "space-sm": "0.5rem", "gutter": "1rem", "margin": "1rem", "space-xs": "0.25rem", "space-lg": "1.5rem" }, fontFamily: { "body-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "caption-xs": ["Inter"], "caption": ["Inter"], "headline-lg": ["Inter"], "headline-md": ["Inter"], "label-md": ["Inter"] }, fontSize: { "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "caption-xs": ["11px", { lineHeight: "14px", fontWeight: "500" }], "caption": ["13px", { lineHeight: "18px", fontWeight: "400" }], "headline-lg": ["28px", { lineHeight: "36px", fontWeight: "700" }], "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }], "label-md": ["14px", { lineHeight: "20px", fontWeight: "600" }] } } } }</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100%; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-space-sm flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight ml-1">Contact Info</h1></div><div class="flex items-center pr-2"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaQiji5_Cr4Eehc6hPoUMqXCF-xc9mgALLgoWdoPrGg2BSL466EYpxm5_VARuLqvpzYhQYuWntvBTWH2JEA8Xpp4LL5UIZvucCixdkoQOF-E0ODY2VnSnIZNonOTP4CAOnmvwLva8CJNlBnfzzyFpz87ObKPhyqAIRSv0WNVGePdouKJE4rBsWy4rywuNUgL1c3zTvxe8Z2TSiLJEVpECQfNPk3cUFO95o9Vs3S1VW"></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-safe bg-surface"><div class="flex flex-col w-full pb-8">
+<!-- Overflow Dropdown Menu Container (Interactive) -->
+<div class="relative w-full px-space-md pt-space-xs flex justify-end">
+<div class="relative">
+<button aria-label="More options" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors shadow-sm" id="menu-toggle-btn">
+<span class="material-symbols-outlined text-[22px]">more_vert</span>
+</button>
+<!-- Dropdown Card -->
+<div class="hidden absolute right-0 top-12 w-48 bg-surface-container-lowest rounded-xl shadow-xl z-30 py-1.5 transition-all transform origin-top-right" id="overflow-menu">
+<button class="w-full px-4 py-2.5 flex items-center gap-3 text-left hover:bg-surface-container-low transition-colors text-on-surface" id="menu-block-action">
+<span class="material-symbols-outlined text-[20px] text-error">block</span>
+<span class="font-label-md text-label-md text-error" id="menu-block-text">Block user</span>
+</button>
+<button class="w-full px-4 py-2.5 flex items-center gap-3 text-left hover:bg-surface-container-low transition-colors text-on-surface" id="menu-report-action">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">flag</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Report user</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Inline Blocked Banner (Toggled dynamically or manually) -->
+<div class="px-space-md mt-1">
+<div class="hidden w-full bg-error-container text-on-error-container rounded-xl p-3.5 mb-4 shadow-sm items-center justify-between" id="blocked-banner">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-error text-[20px]">block</span>
+<span class="font-label-md text-label-md">You blocked this user</span>
+</div>
+<button class="px-3 py-1 bg-surface-container-lowest text-error rounded-lg font-label-md text-caption shadow-sm active:scale-95 transition-transform" id="unblock-btn">
+        Unblock
+      </button>
+</div>
+</div>
+<!-- Profile Hero / Header Details -->
+<div class="flex flex-col items-center px-space-md text-center">
+<!-- Large Avatar with Status Ring -->
+<div class="relative w-28 h-28 mb-4">
+<div class="w-28 h-28 rounded-full p-1 bg-surface-container-high shadow-md">
+<img class="w-full h-full rounded-full object-cover" data-alt="Warm aesthetic editorial portrait of Sara Malik, a young South Asian woman creative designer wearing stylish round glasses, minimalist neutral blazer, pleasant natural smile, bright diffuse lighting with soft indigo and pastel teal ambient accents in a modern studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAev8ztwGq4hD-1KKRhT4UipH29s7Mct7_Q3X5WMJNlOhNrBFz-Np7-2zc3eZ3hVITSd_1vxuW0hIWAfQiBf4Nfdz63Vfr_a3HGLkze6eFk2H10TeMW_drYD7Ca_y4cFPtHknL6sirg1VOP4ZQsf0HMv2MuiBgohskDmsoWgu0YwCubFOKZwc5CGeD2opRDLhWaJkN42rBicg6NIBilp0sRFdmZCnJHsiOffYGNph0q">
+</div>
+<!-- Online Status Indicator -->
+<span class="absolute bottom-1.5 right-1.5 w-4 h-4 bg-tertiary-container rounded-full shadow-[0_0_0_2.5px_#ffffff]" id="online-indicator" title="Online"></span>
+</div>
+<!-- Name & Handle -->
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Sara Malik</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">@saramalik</p>
+<!-- Joined Date Chip -->
+<div class="inline-flex items-center gap-1.5 mt-2.5 px-3 py-1 bg-surface-container-low text-on-surface-variant rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+<span class="font-caption text-caption">Joined October 2026</span>
+</div>
+<!-- Connection Insights Badges -->
+<div class="flex items-center justify-center gap-2 mt-3.5">
+<div class="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container rounded-lg text-primary">
+<span class="material-symbols-outlined text-[16px]">forum</span>
+<span class="font-caption-xs text-caption-xs font-semibold">Active Gupshup Contributor</span>
+</div>
+
+</div>
+</div>
+<!-- Bio Card -->
+<div class="px-space-md mt-6">
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm">
+<h3 class="font-caption-xs text-caption-xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1.5">Bio</h3>
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+        Designer. Coffee lover. Always up for a chat.
+      </p>
+</div>
+</div>
+<!-- Quick Info Mosaic (Material 3 Surface Panels) -->
+<div class="px-space-md mt-3 grid grid-cols-2 gap-3">
+<div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-sm flex flex-col justify-between">
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-caption-xs text-caption-xs uppercase tracking-wider">Local Time</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface">3:42 PM (GMT+5:30)</p>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-3.5 shadow-sm flex flex-col justify-between">
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[18px]">photo_library</span>
+<span class="font-caption-xs text-caption-xs uppercase tracking-wider">Shared Media</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface">24 Photos • 6 Audio</p>
+</div>
+</div>
+<!-- Primary & Secondary Interactive Action Buttons -->
+<div class="px-space-md mt-6 flex flex-col gap-3">
+<!-- Message Button -->
+<button class="w-full h-12 rounded-[14px] bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 shadow-md active:bg-primary-container transition-all" id="message-btn">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+<span>Message</span>
+</button>
+<!-- Block / Unblock Toggle Button -->
+<button class="w-full h-12 rounded-[14px] bg-surface-container-lowest text-error font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm hover:bg-surface-container-low transition-colors" id="block-toggle-btn">
+<span class="material-symbols-outlined text-[20px]">block</span>
+<span id="block-btn-text">Block user</span>
+</button>
+<!-- Report Trigger Link -->
+<button class="w-full py-2.5 flex items-center justify-center gap-1.5 text-on-surface-variant hover:text-error transition-colors mt-1" id="report-modal-trigger">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+<span class="font-caption text-caption font-medium">Report user</span>
+</button>
+</div>
+<!-- Shared Recent Moments Showcase (Moments of Delight) -->
+<div class="px-space-md mt-6">
+<div class="flex items-center justify-between mb-3">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Recent Media</h3>
+<span class="font-caption text-caption text-primary font-medium">View all</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square rounded-xl overflow-hidden shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Aesthetic artisanal latte art in a ceramic cup resting on an oak café table with morning sunlight beams and notebook in background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwiHN3qYzEoCu42rjkS0qbaGULkK9MV8vIfAmQ2-JlsNbn3PJ77fOxe3ZW8NnSDJNVtardmCG3AWsTqt3OMRTZk0T5gWwbZUg1ug0GprJCek-auplZ_nJV-EIljZPU2PWOrmHOv7wqdqOKbj2SRkFUCm0B5q4C2uFaWk-BEMIsXf0DwxbNiinf6mQTf6ZbfvJVVflpKsso_y1jmOn-yqTfxLn6ykM2pSwO0YkXYQNF">
+</div>
+<div class="aspect-square rounded-xl overflow-hidden shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Modern UI UX wireframe sketches on sticky notes placed on frosted glass whiteboard with colorful pastel markers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt8wbAxffl7ZyI9aK0gGeQVSNrtOxa12wAC-GgOC8HSNV2SMoZmpXTvKlp1S53iVeJpEOLTO4JKybk_66MlpbPK_gjI291UDBsCtcyl-M8e8U2XA5qIZ4rnwpmpfXAW_Wx2y5qQZ_zfiUr43s9JQMbp2gOqNXTbAkXQhUIxZFiWA3lI4vDqyeKXHWuNDS1Z5BQcYeIk22XBp28KDUUx_qH8UC5xK3TLnTU2LkMG54g">
+</div>
+<div class="aspect-square rounded-xl overflow-hidden shadow-sm bg-surface-container flex items-center justify-center relative">
+<img class="w-full h-full object-cover" data-alt="Peaceful sunset landscape over city skyline with warm amber and lavender sky reflecting on modern skyscraper windows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9OqguuzsD5B98gu0alQ467A9WpWKtSXMiJk3_w1ZIKWCv_KoRNVNr2Iq-g7HTtK0dB68MmwllLa_m52W5YyQxqZhF2RQP87ph9e0Jc_4FQ3p6vyblamnaXpABUWIy87pC2cvdroJS6xXRvS-bhGEufVuu82LMEI9iMnfgPOH4deu5CJvk4h0NGveqWq_tJAQXqObIjhV_bpBPJrOtuqe2uNZ4CFpikZX5AB1k0kPc">
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px] flex items-center justify-center text-on-primary font-label-md text-label-md">
+          +18
+        </div>
+</div>
+</div>
+</div>
+<!-- Report Feedback Toast Modal Sheet (Simulated Delight Dialog) -->
+<div class="fixed inset-0 z-50 flex items-end justify-center bg-inverse-surface/40 backdrop-blur-sm hidden" id="report-dialog">
+<div class="w-full max-w-[640px] bg-surface-container-lowest rounded-t-[24px] p-6 shadow-2xl flex flex-col gap-4 animate-in slide-in-from-bottom duration-200">
+<div class="w-9 h-1 bg-outline-variant rounded-full mx-auto mb-1"></div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container text-error flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">flag</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Report Sara Malik</h4>
+<p class="font-caption text-caption text-on-surface-variant">Help us keep Gupshup safe and friendly</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-1">
+<button class="report-opt-btn w-full text-left p-3 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-body-md text-body-md transition-colors flex items-center justify-between">
+<span>Spam or unsolicited messages</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
+</button>
+<button class="report-opt-btn w-full text-left p-3 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-body-md text-body-md transition-colors flex items-center justify-between">
+<span>Harassment or inappropriate behavior</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
+</button>
+<button class="report-opt-btn w-full text-left p-3 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-body-md text-body-md transition-colors flex items-center justify-between">
+<span>Impersonation or fake account</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+<button class="w-full h-12 rounded-[14px] bg-surface-container text-on-surface font-label-md text-label-md mt-1" id="close-report-btn">
+        Cancel
+      </button>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    let isBlocked = false;
+
+    const menuToggle = document.getElementById('menu-toggle-btn');
+    const overflowMenu = document.getElementById('overflow-menu');
+    const menuBlockAction = document.getElementById('menu-block-action');
+    const menuBlockText = document.getElementById('menu-block-text');
+    const menuReportAction = document.getElementById('menu-report-action');
+
+    const blockedBanner = document.getElementById('blocked-banner');
+    const unblockBtn = document.getElementById('unblock-btn');
+    const blockToggleBtn = document.getElementById('block-toggle-btn');
+    const blockBtnText = document.getElementById('block-btn-text');
+    const messageBtn = document.getElementById('message-btn');
+    const onlineIndicator = document.getElementById('online-indicator');
+
+    const reportTrigger = document.getElementById('report-modal-trigger');
+    const reportDialog = document.getElementById('report-dialog');
+    const closeReportBtn = document.getElementById('close-report-btn');
+    const reportOpts = document.querySelectorAll('.report-opt-btn');
+
+    // Overflow Menu Toggle
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      overflowMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      if (!overflowMenu.classList.contains('hidden')) {
+        overflowMenu.classList.add('hidden');
+      }
+    });
+
+    // Toggle Block State Logic
+    function setBlockState(blocked) {
+      isBlocked = blocked;
+      if (isBlocked) {
+        blockedBanner.classList.remove('hidden');
+        blockedBanner.classList.add('flex');
+        blockBtnText.textContent = 'Unblock user';
+        menuBlockText.textContent = 'Unblock user';
+        
+        // Disabled Message button style
+        messageBtn.classList.remove('bg-primary', 'text-on-primary', 'shadow-md', 'active:bg-primary-container');
+        messageBtn.classList.add('bg-surface-container', 'text-outline', 'cursor-not-allowed', 'shadow-none');
+        messageBtn.setAttribute('disabled', 'true');
+        
+        // Dim status indicator
+        onlineIndicator.classList.add('hidden');
+      } else {
+        blockedBanner.classList.add('hidden');
+        blockedBanner.classList.remove('flex');
+        blockBtnText.textContent = 'Block user';
+        menuBlockText.textContent = 'Block user';
+
+        // Re-enable Message button
+        messageBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-md', 'active:bg-primary-container');
+        messageBtn.classList.remove('bg-surface-container', 'text-outline', 'cursor-not-allowed', 'shadow-none');
+        messageBtn.removeAttribute('disabled');
+
+        // Restore online indicator
+        onlineIndicator.classList.remove('hidden');
+      }
+      overflowMenu.classList.add('hidden');
+    }
+
+    blockToggleBtn.addEventListener('click', () => setBlockState(!isBlocked));
+    menuBlockAction.addEventListener('click', () => setBlockState(!isBlocked));
+    unblockBtn.addEventListener('click', () => setBlockState(false));
+
+    // Report Dialog Handlers
+    function openReport() {
+      overflowMenu.classList.add('hidden');
+      reportDialog.classList.remove('hidden');
+    }
+
+    function closeReport() {
+      reportDialog.classList.add('hidden');
+    }
+
+    reportTrigger.addEventListener('click', openReport);
+    menuReportAction.addEventListener('click', openReport);
+    closeReportBtn.addEventListener('click', closeReport);
+
+    reportOpts.forEach(btn => {
+      btn.addEventListener('click', () => {
+        closeReport();
+        const notification = document.createElement('div');
+        notification.className = 'fixed bottom-6 left-4 right-4 z-50 p-4 bg-inverse-surface text-inverse-on-surface rounded-xl shadow-lg flex items-center gap-3 transition-opacity duration-300';
+        notification.innerHTML = '<span class="material-symbols-outlined text-secondary-container">check_circle</span><span class="font-body-md text-body-md">Thank you. Your report has been submitted.</span>';
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 400);
+        }, 3000);
+      });
+    });
+  })();
+</script></main>
+
+
+
+</body></html>
