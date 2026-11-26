@@ -19,17 +19,12 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
   onOpenSearchPeople,
 }) => {
   const [query, setQuery] = useState('');
-  const [filterMode, setFilterMode] = useState<'all' | 'online' | 'new'>('all');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const blockedIds = new Set(blocked.map((b) => b.userId));
   const activePeople = contacts.filter((c) => !blockedIds.has(c.id));
 
-  const filtered = filterPeopleDirectory(activePeople, query).filter((person) => {
-    if (filterMode === 'online') return person.isOnline;
-    if (filterMode === 'new') return Boolean(person.isNew);
-    return true;
-  });
+  const filtered = filterPeopleDirectory(activePeople, query);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -95,36 +90,12 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
         </div>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex items-center justify-between gap-4 mb-6">
-        <div className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-surface-container-low">
-          {(
-            [
-              { id: 'all', label: `All (${activePeople.length})` },
-              {
-                id: 'online',
-                label: `Online (${activePeople.filter((p) => p.isOnline).length})`,
-              },
-              { id: 'new', label: 'New' },
-            ] as const
-          ).map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setFilterMode(tab.id)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                filterMode === tab.id
-                  ? 'bg-surface-container-lowest text-primary shadow-xs'
-                  : 'text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
+        <span className="px-3.5 py-1.5 rounded-lg bg-surface-container-low text-xs font-semibold text-on-surface-variant">
+          Public member IDs
+        </span>
         <span className="text-xs font-medium text-on-surface-variant hidden sm:inline">
-          Showing {filtered.length} {filtered.length === 1 ? 'person' : 'people'}
+          Showing {filtered.length} {filtered.length === 1 ? 'member' : 'members'}
         </span>
       </div>
 
@@ -135,17 +106,16 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
             <span className="material-symbols-outlined text-[28px]">person_off</span>
           </div>
           <h3 className="text-lg font-semibold text-on-surface">
-            No people match &ldquo;{query.trim() || filterMode}&rdquo;
+            {query.trim() ? `No member ID found for “${query.trim()}”` : 'No other members have joined yet.'}
           </h3>
           <p className="text-sm text-on-surface-variant mt-1.5">
-            Try another name, handle, or switch back to the full directory.
+            Search by @username. New members will appear here after they create an account.
           </p>
           <div className="flex items-center justify-center gap-2.5 mt-5">
             <button
               type="button"
               onClick={() => {
                 setQuery('');
-                setFilterMode('all');
               }}
               className="h-10 px-4 rounded-xl bg-primary-container text-on-primary text-sm font-semibold"
             >
@@ -178,53 +148,27 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
                     name={person.name}
                     initials={person.initials}
                     size="md"
-                    isOnline={person.isOnline}
+                    showOnlineDot={false}
                     bgClass={person.avatarBgClass}
                     textClass={person.avatarTextClass}
                   />
                 </button>
 
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <button
-                      type="button"
-                      onClick={() => onOpenContactInfo(person.id)}
-                      className="text-base font-semibold text-on-surface hover:text-primary truncate text-left transition-colors"
-                    >
-                      {person.name}
-                    </button>
-                    {person.verified && (
-                      <span
-                        title="Verified account"
-                        className="material-symbols-outlined text-[16px] text-primary icon-filled shrink-0"
-                      >
-                        verified
-                      </span>
-                    )}
-                    {person.isNew && (
-                      <span className="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wide">
-                        New
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs text-on-surface-variant mt-0.5">
-                    <span>@{person.username}</span>
-                    <span>•</span>
-                    <span className={person.isOnline ? 'text-secondary font-medium' : ''}>
-                      {person.isOnline ? 'Online' : person.joinedAgo}
-                    </span>
-                  </div>
-
-                  <p className="text-[13px] text-on-surface-variant leading-relaxed mt-2.5 line-clamp-2">
-                    {person.bio}
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => onOpenContactInfo(person.id)}
+                    className="text-base font-semibold text-on-surface hover:text-primary truncate text-left transition-colors"
+                  >
+                    @{person.username}
+                  </button>
+                  <p className="text-xs text-on-surface-variant mt-1">Gupshup member ID</p>
                 </div>
               </div>
 
               <div className="flex items-center justify-between gap-3 pt-2 border-t border-surface-container-low">
                 <span className="text-xs font-medium text-on-surface-variant truncate">
-                  {person.roleTag ?? person.joinedLabel}
+                  Public username
                 </span>
 
                 <div className="flex items-center gap-2 shrink-0">

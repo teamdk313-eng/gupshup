@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { USERNAME_SUGGESTIONS } from '../data/seedData';
 import type { CurrentUserProfile } from '../types/gupshup';
 import { normalizeUsernameInput, validateUsername } from '../utils/gupshupLogic';
 import { Avatar } from './Avatar';
@@ -8,7 +7,7 @@ interface OnboardingScreenProps {
   user: CurrentUserProfile;
   directoryHandles: string[];
   onBack: () => void;
-  onComplete: (username: string) => void;
+  onComplete: (username: string) => Promise<void>;
   onOpenPrivacy: () => void;
 }
 
@@ -19,8 +18,10 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   onComplete,
   onOpenPrivacy,
 }) => {
-  const [inputValue, setInputValue] = useState(user.username || 'ali_raza');
+  const [inputValue, setInputValue] = useState(user.username || '');
   const [isChecking, setIsChecking] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
 
   const validation = validateUsername(inputValue, directoryHandles);
@@ -39,10 +40,18 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
 
   const canContinue = !isChecking && validation.status === 'available';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canContinue) return;
-    onComplete(validation.normalized);
+    if (!canContinue || isSaving) return;
+    setIsSaving(true);
+    setSubmitError(null);
+    try {
+      await onComplete(validation.normalized);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Unable to save this username. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -208,38 +217,22 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
             </p>
           </div>
 
-          {/* Quick Suggestion Chips */}
-          <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-surface-container-low">
-            <div className="flex items-center gap-1.5 text-on-surface-variant">
-              <span className="material-symbols-outlined text-[16px] text-primary">
-                auto_awesome
-              </span>
-              <span className="text-[11px] font-semibold uppercase tracking-wider">
-                Suggested for you
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {USERNAME_SUGGESTIONS.map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  onClick={() => setInputValue(chip)}
-                  className="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-[13px] font-medium shadow-sm hover:bg-primary hover:text-on-primary transition-all flex items-center gap-0.5 group"
-                >
-                  <span className="text-primary group-hover:text-on-primary font-bold">@</span>
-                  <span>{chip}</span>
-                </button>
-              ))}
-            </div>
+          {submitError && (
+            <p className="text-sm text-error font-medium" role="alert">{submitError}</p>
+          )}
+
+          <div className="p-3.5 rounded-xl bg-surface-container-low text-[13px] text-on-surface-variant">
+            Your unique @username is the only profile detail shown in the Gupshup member directory.
+            Your email address is not displayed to other members.
           </div>
 
           <div className="flex flex-col gap-3 mt-1">
             <button
               type="submit"
-              disabled={!canContinue}
+              disabled={!canContinue || isSaving}
               className="w-full h-12 rounded-[14px] bg-primary hover:bg-primary-container text-on-primary text-sm font-semibold flex items-center justify-center gap-2 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span>Continue</span>
+              <span>{isSaving ? 'Saving username...' : 'Continue'}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
           </div>

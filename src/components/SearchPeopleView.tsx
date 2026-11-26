@@ -173,7 +173,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
               No user found for &lsquo;{trimmed}&rsquo;
             </h3>
             <p className="text-sm text-on-surface-variant mt-1">
-              Check the spelling or try searching by first name instead.
+              Check the spelling or try another @username.
             </p>
             <button
               type="button"
@@ -203,26 +203,16 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
                       name={person.name}
                       initials={person.initials}
                       size="md"
-                      isOnline={person.isOnline}
+                      showOnlineDot={false}
                       bgClass={person.avatarBgClass}
                       textClass={person.avatarTextClass}
                     />
                     <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-semibold text-on-surface truncate">
-                          <HighlightMatch text={person.name} query={trimmed} />
-                        </span>
-                        {person.verified && (
-                          <span className="material-symbols-outlined text-[15px] text-primary icon-filled">
-                            verified
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-on-surface-variant">
+                      <p className="text-sm font-semibold text-on-surface truncate">
                         @<HighlightMatch text={person.username} query={trimmed} />
                       </p>
-                      <p className="text-xs text-on-surface-variant truncate mt-0.5">
-                        {person.bio}
+                      <p className="text-xs text-on-surface-variant mt-0.5">
+                        Public Gupshup ID
                       </p>
                     </div>
                   </button>
@@ -242,8 +232,8 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
       ) : (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-on-surface">People you may know</h3>
-            <span className="text-xs text-on-surface-variant">Suggested connections</span>
+            <h3 className="text-sm font-semibold text-on-surface">Gupshup member IDs</h3>
+            <span className="text-xs text-on-surface-variant">Public usernames only</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -261,17 +251,16 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
                     name={person.name}
                     initials={person.initials}
                     size="md"
-                    isOnline={person.isOnline}
+                    showOnlineDot={false}
                     bgClass={person.avatarBgClass}
                     textClass={person.avatarTextClass}
                   />
                   <div className="min-w-0">
                     <div className="text-sm font-semibold text-on-surface truncate">
-                      {person.name}
+                      @{person.username}
                     </div>
                     <div className="text-xs text-on-surface-variant truncate">
-                      @{person.username}
-                      {person.mutualFriends ? ` • ${person.mutualFriends} mutual` : ''}
+                      Public Gupshup ID
                     </div>
                   </div>
                 </button>

@@ -253,7 +253,7 @@ export const MyProfileView: React.FC<MyProfileViewProps> = ({
 interface EditProfileViewProps {
   user: CurrentUserProfile;
   directoryHandles: string[];
-  onSave: (updates: Partial<CurrentUserProfile>) => void;
+  onSave: (updates: Partial<CurrentUserProfile>) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -269,6 +269,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
   const [avatarDataUrl, setAvatarDataUrl] = useState<string | undefined>(user.avatarDataUrl);
   const [discoverable, setDiscoverable] = useState(user.discoverable);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const validation = validateUsername(username, directoryHandles, user.username);
@@ -291,17 +292,25 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSave) return;
-    onSave({
-      name: name.trim(),
-      initials: getInitials(name),
-      username: validation.normalized,
-      bio: bio.trim(),
-      avatarDataUrl,
-      discoverable,
-    });
+    if (!canSave || isSaving) return;
+    setIsSaving(true);
+    setErrorMsg(null);
+    try {
+      await onSave({
+        name: name.trim(),
+        initials: getInitials(name),
+        username: validation.normalized,
+        bio: bio.trim(),
+        avatarDataUrl,
+        discoverable,
+      });
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : 'Unable to save your profile.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -318,7 +327,7 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-on-surface">Edit Profile</h2>
           <p className="text-xs sm:text-sm text-on-surface-variant">
-            Changes update your public Gupshup card immediately
+            Only your unique @username is shown in the public member directory.
           </p>
         </div>
       </div>
@@ -467,10 +476,10 @@ export const EditProfileView: React.FC<EditProfileViewProps> = ({
           </button>
           <button
             type="submit"
-            disabled={!canSave}
+            disabled={!canSave || isSaving}
             className="h-11 px-6 rounded-[14px] bg-primary-container hover:bg-primary disabled:opacity-45 text-on-primary text-sm font-semibold transition-colors"
           >
-            Save Changes
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </form>

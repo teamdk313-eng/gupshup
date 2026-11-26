@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 interface WelcomeScreenProps {
   onGoogleSignIn: () => Promise<void>;
-  onDemoSignIn: () => void;
   onOpenPrivacy: () => void;
   authError?: string | null;
   isAuthResolving?: boolean;
@@ -10,7 +9,6 @@ interface WelcomeScreenProps {
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onGoogleSignIn,
-  onDemoSignIn,
   onOpenPrivacy,
   authError = null,
   isAuthResolving = false,
@@ -67,68 +65,26 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </div>
           </div>
 
-          {/* Center Floating Conversational Showcase */}
+          {/* Product preview without fictional members or sample messages */}
           <div className="relative z-10 my-6 lg:my-auto py-4 flex flex-col items-center justify-center">
-            <div className="w-full max-w-[500px] relative">
-              <div className="w-fit max-w-[85%] mb-2.5 p-3.5 rounded-2xl rounded-tl-sm bg-surface-container-lowest/95 backdrop-blur-md shadow-sm">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="w-2 h-2 rounded-full bg-secondary" />
-                  <span className="text-[11px] text-secondary font-semibold">Sara Malik</span>
-                  <span className="text-[11px] text-outline">10:41 AM</span>
-                </div>
-                <p className="text-sm text-on-surface">
-                  Hey! Did you see the new designs for the Gupshup workspace?
-                </p>
+            <div className="w-full max-w-[460px] rounded-3xl p-6 sm:p-8 bg-surface-container-lowest/90 backdrop-blur-md shadow-lg border border-outline-variant/15">
+              <div className="w-14 h-14 rounded-2xl bg-primary-container text-on-primary flex items-center justify-center shadow-md mb-5">
+                <span className="material-symbols-outlined text-[30px] icon-filled">forum</span>
               </div>
-
-              <div className="ml-auto w-fit max-w-[85%] mb-3 p-3.5 rounded-2xl rounded-tr-sm bg-primary-container text-on-primary shadow-md">
-                <p className="text-sm">
-                  Working on them right now! Finishing up the Drive media sync.
-                </p>
-                <div className="flex items-center justify-end gap-1 mt-1 text-on-primary-container">
-                  <span className="text-[11px] opacity-90">10:42 AM</span>
-                  <span className="material-symbols-outlined text-[14px]">done_all</span>
-                </div>
-              </div>
-
-              <div className="relative -mt-1 sm:-ml-4 w-64 sm:w-72 rounded-2xl p-2 bg-surface-container-lowest/95 backdrop-blur-md shadow-lg">
-                <div className="relative w-full h-32 rounded-xl overflow-hidden bg-surface-container">
-                  <img
-                    src="/src/assets/images/roadmap_desk_1795617788460.jpg"
-                    alt="Workspace roadmap preview"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex items-end p-2.5">
-                    <span className="text-[11px] text-inverse-on-surface font-medium flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[14px]">photo_camera</span>
-                      roadmap-v2.jpg
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="ml-auto -mt-5 sm:-mr-2 w-64 sm:w-72 p-3 rounded-2xl rounded-br-sm bg-surface-container-lowest/95 backdrop-blur-lg shadow-lg flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-secondary text-on-secondary flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[18px] icon-filled">
-                    play_arrow
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-semibold text-on-surface">Voice Note</span>
-                    <span className="text-[11px] text-outline">0:14</span>
-                  </div>
-                  <div className="flex items-center gap-[3px] h-4">
-                    {[8, 14, 18, 10, 16, 12, 18, 14, 8, 12, 6, 14, 8].map((h, i) => (
-                      <span
-                        key={i}
-                        style={{ height: `${h}px` }}
-                        className={`w-[3px] rounded-full ${
-                          i < 8 ? 'bg-secondary' : 'bg-outline-variant'
-                        }`}
-                      />
-                    ))}
-                  </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">
+                Your conversations, your community.
+              </h2>
+              <p className="text-sm sm:text-base text-on-surface-variant mt-3 leading-relaxed">
+                Sign in with Google, choose a unique @username, and find real Gupshup members.
+                Only your username appears in the public member directory.
+              </p>
+              <div className="mt-6 rounded-2xl bg-surface-container-low p-4 flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary text-[24px]">alternate_email</span>
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
+                    Your public Gupshup ID
+                  </p>
+                  <p className="text-sm font-semibold text-on-surface">Chosen by you after sign-in</p>
                 </div>
               </div>
             </div>
@@ -251,15 +207,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 </span>
               </button>
 
-              <button
-                type="button"
-                disabled={busy}
-                onClick={onDemoSignIn}
-                className="w-full h-12 rounded-[14px] bg-primary-container hover:bg-primary text-on-primary text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors disabled:opacity-60"
-              >
-                <span>Quick Start as Ali Raza (@ali_raza)</span>
-                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </button>
             </div>
 
             <p className="text-[13px] text-outline text-center mt-5 leading-relaxed">

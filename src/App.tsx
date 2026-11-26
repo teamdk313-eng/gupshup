@@ -19,14 +19,7 @@ import {
 import { ReportUserModal } from './components/ReportUserModal';
 import { SearchPeopleView } from './components/SearchPeopleView';
 import { WelcomeScreen } from './components/WelcomeScreen';
-import {
-  DEFAULT_USER_PROFILE,
-  INITIAL_BLOCKED,
-  INITIAL_CHATS,
-  INITIAL_CONTACTS,
-  INITIAL_MESSAGES_BY_CHAT,
-  INITIAL_RECENT_SEARCHES,
-} from './data/seedData';
+import { DEFAULT_USER_PROFILE } from './data/seedData';
 import { supabase } from './lib/supabase';
 import {
   connectGoogleDrive,
@@ -133,12 +126,63 @@ function resolveInitialScreen(): AppScreen {
   return 'welcome';
 }
 
+
+interface GupshupProfileRow {
+  id: string;
+  username: string;
+}
+
+async function getOwnProfile(userId: string): Promise<GupshupProfileRow | null> {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error) throw new Error(error.message || 'Unable to load your profile.');
+  return (data as GupshupProfileRow | null) ?? null;
+}
+
+async function saveOwnUsername(userId: string, rawUsername: string): Promise<GupshupProfileRow> {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  const username = rawUsername.trim().toLowerCase();
+  if (!/^[a-z0-9._]{3,20}$/.test(username)) {
+    throw new Error('Choose a username with 3–20 lowercase letters, numbers, dots or underscores.');
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert({ id: userId, username, updated_at: new Date().toISOString() }, { onConflict: 'id' })
+    .select('id, username')
+    .single();
+
+  if (error) {
+    if (error.code === '23505' || /duplicate key|unique constraint/i.test(error.message ?? '')) {
+      throw new Error('That username is already taken. Please choose another one.');
+    }
+    throw new Error(error.message || 'Unable to save your username.');
+  }
+  if (!data) throw new Error('Supabase did not return the saved username.');
+  return data as GupshupProfileRow;
+}
+
+async function getDirectoryProfiles(currentUserId: string): Promise<GupshupProfileRow[]> {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username')
+    .neq('id', currentUserId)
+    .order('username', { ascending: true });
+  if (error) throw new Error(error.message || 'Unable to load the member directory.');
+  return (data ?? []) as GupshupProfileRow[];
+}
+
 export default function App() {
   const initialUrlState = useMemo(() => parseRequestedScreenFromUrl(), []);
   const [screen, setScreen] = useState<AppScreen>(resolveInitialScreen);
   const [privacyBackTarget, setPrivacyBackTarget] = useState<AppScreen>('settings');
   const [supabaseSession, setSupabaseSession] = useState<Session | null>(null);
-  const [isDemoPreview, setIsDemoPreview] = useState<boolean>(initialUrlState.isAutostartDemo);
+  const [isDemoPreview, setIsDemoPreview] = useState<boolean>(false);
   const [authResolving, setAuthResolving] = useState<boolean>(() => {
     if (typeof window === 'undefined' || !supabase) return false;
     const cb = parseAuthCallbackFromUrl(window.location.search, window.location.hash);
@@ -147,19 +191,15 @@ export default function App() {
   const [authError, setAuthError] = useState<string | null>(null);
 
   const [user, setUser] = useState<CurrentUserProfile>(() => ({ ...DEFAULT_USER_PROFILE }));
-  const [contacts] = useState<ContactUser[]>(() => [...INITIAL_CONTACTS]);
-  const [chats, setChats] = useState<ChatThread[]>(() => [...INITIAL_CHATS]);
-  const [messagesByChat, setMessagesByChat] = useState<Record<string, ChatMessage[]>>(() => ({
-    ...INITIAL_MESSAGES_BY_CHAT,
-  }));
-  const [blocked, setBlocked] = useState<BlockedEntry[]>(() => [...INITIAL_BLOCKED]);
-  const [recentSearches, setRecentSearches] = useState<string[]>(() => [
-    ...INITIAL_RECENT_SEARCHES,
-  ]);
+  const [contacts, setContacts] = useState<ContactUser[]>([]);
+  const [chats, setChats] = useState<ChatThread[]>([]);
+  const [messagesByChat, setMessagesByChat] = useState<Record<string, ChatMessage[]>>({});
+  const [blocked, setBlocked] = useState<BlockedEntry[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [reports, setReports] = useState<ReportRecord[]>([]);
 
-  const [activeChatId, setActiveChatId] = useState<string>('chat-sara');
-  const [selectedContactId, setSelectedContactId] = useState<string>('sara');
+  const [activeChatId, setActiveChatId] = useState<string>('');
+  const [selectedContactId, setSelectedContactId] = useState<string>('');
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [replyTarget, setReplyTarget] = useState<ChatMessage | null>(null);
 
@@ -201,14 +241,12 @@ export default function App() {
   }, []);
 
   const applySupabaseSession = useCallback(
-    (session: Session | null, options?: { fromCallback?: boolean }) => {
+    (session: Session | null) => {
       setSupabaseSession(session);
       syncDriveTokenFromSession(session);
       refreshDriveState();
 
-      if (!session) {
-        return;
-      }
+      if (!session) return;
 
       setIsDemoPreview(false);
       setAuthError(null);
@@ -218,33 +256,23 @@ export default function App() {
         metadata: session.user.user_metadata as Record<string, unknown> | undefined,
       });
 
-      const handleKey = `gupshup_username_${session.user.id}`;
-      let savedHandle: string | null = null;
-      try {
-        savedHandle = window.localStorage.getItem(handleKey);
-      } catch {
-        savedHandle = null;
-      }
-
       setUser((prev) => ({
         ...prev,
         name: profile.name,
         initials: getInitials(profile.name),
         email: profile.email,
-        username: savedHandle || prev.username,
         avatarDataUrl: profile.avatarUrl ?? prev.avatarDataUrl,
         authMode: 'google',
       }));
 
+      // The Supabase profile row decides whether the account needs onboarding.
+      // A browser-local value is only imported once for existing users.
       setScreen((prevScreen) => {
-        if (options?.fromCallback) {
-          return savedHandle ? 'discover' : 'onboarding';
-        }
-        if (prevScreen === 'welcome') {
+        if (prevScreen === 'welcome' || prevScreen === 'onboarding') {
           if (initialUrlState.requested && isProtectedScreen(initialUrlState.requested)) {
             return initialUrlState.requested;
           }
-          return savedHandle ? 'discover' : 'discover';
+          return 'onboarding';
         }
         return prevScreen;
       });
@@ -288,9 +316,7 @@ export default function App() {
           setAuthError(formatSupabaseAuthError(error.message, error.code));
           setScreen('welcome');
         } else if (data.session) {
-          applySupabaseSession(data.session, {
-            fromCallback: isCallbackPath || cb.hasCallbackParams,
-          });
+          applySupabaseSession(data.session);
         } else {
           setSupabaseSession(null);
           syncDriveTokenFromSession(null);
@@ -320,14 +346,20 @@ export default function App() {
         syncDriveTokenFromSession(null);
         refreshDriveState();
         setUser({ ...DEFAULT_USER_PROFILE });
+        setContacts([]);
+        setChats([]);
+        setMessagesByChat({});
+        setBlocked([]);
+        setRecentSearches([]);
+        setReports([]);
+        setActiveChatId('');
+        setSelectedContactId('');
         setScreen('welcome');
         return;
       }
 
       if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
-        applySupabaseSession(session, {
-          fromCallback: event === 'SIGNED_IN' && (isCallbackPath || cb.hasCallbackParams),
-        });
+        applySupabaseSession(session);
       }
     });
 
@@ -337,33 +369,112 @@ export default function App() {
     };
   }, [applySupabaseSession, refreshDriveState]);
 
+  useEffect(() => {
+    const userId = supabaseSession?.user.id;
+    if (!userId || !supabase) {
+      setContacts([]);
+      return;
+    }
+
+    let active = true;
+
+    const syncProfileAndDirectory = async () => {
+      setAuthResolving(true);
+      try {
+        let ownProfile = await getOwnProfile(userId);
+
+        // Import the old device-local username once, preserving existing handles
+        // while moving their canonical copy into the shared Supabase database.
+        if (!ownProfile && typeof window !== 'undefined') {
+          const legacyKey = `gupshup_username_${userId}`;
+          let legacyUsername: string | null = null;
+          try {
+            legacyUsername = window.localStorage.getItem(legacyKey);
+          } catch {
+            legacyUsername = null;
+          }
+
+          if (legacyUsername) {
+            try {
+              ownProfile = await saveOwnUsername(userId, legacyUsername);
+              window.localStorage.removeItem(legacyKey);
+            } catch (migrationError) {
+              if (
+                migrationError instanceof Error &&
+                migrationError.message.toLowerCase().includes('already taken')
+              ) {
+                window.localStorage.removeItem(legacyKey);
+                setAuthError(migrationError.message);
+              } else {
+                throw migrationError;
+              }
+            }
+          }
+        }
+
+        if (!active) return;
+
+        if (ownProfile) {
+          setUser((prev) => ({ ...prev, username: ownProfile.username }));
+          setScreen((prev) => {
+            if (prev === 'welcome' || prev === 'onboarding') {
+              if (initialUrlState.requested && isProtectedScreen(initialUrlState.requested)) {
+                return initialUrlState.requested;
+              }
+              return 'discover';
+            }
+            return prev;
+          });
+        } else {
+          setUser((prev) => ({ ...prev, username: '' }));
+          setScreen('onboarding');
+        }
+
+        const directory = await getDirectoryProfiles(userId);
+        if (!active) return;
+        setContacts(directory.map((member) => ({
+          id: member.id,
+          name: member.username,
+          username: member.username,
+          initials: member.username.slice(0, 2).toUpperCase(),
+          avatarBgClass: 'bg-primary-fixed',
+          avatarTextClass: 'text-on-primary-fixed',
+          bio: '',
+          joinedLabel: 'Gupshup member',
+          joinedAgo: '',
+          localTime: '',
+          isOnline: false,
+        })));
+      } catch (error) {
+        if (!active) return;
+        setAuthError(error instanceof Error ? error.message : 'Unable to load your Gupshup profile.');
+        setContacts([]);
+      } finally {
+        if (active) setAuthResolving(false);
+      }
+    };
+
+    void syncProfileAndDirectory();
+    return () => {
+      active = false;
+    };
+  }, [supabaseSession?.user.id, initialUrlState.requested]);
+
   /* --------------------------- Auth & Navigation --------------------------- */
   const handleGoogleSignIn = async () => {
     setAuthError(null);
     await signInWithGoogleSupabase();
   };
 
-  const handleDemoSignIn = () => {
-    setAuthError(null);
-    setIsDemoPreview(true);
-    setUser((prev) => ({ ...prev, authMode: 'demo' }));
-    setScreen('onboarding');
-  };
-
-  const handleCompleteOnboarding = (chosenUsername: string) => {
-    if (supabaseSession?.user.id) {
-      try {
-        window.localStorage.setItem(
-          `gupshup_username_${supabaseSession.user.id}`,
-          chosenUsername
-        );
-      } catch {
-        // Ignore storage errors
-      }
+  const handleCompleteOnboarding = async (chosenUsername: string): Promise<void> => {
+    const userId = supabaseSession?.user.id;
+    if (!userId || !supabase) {
+      throw new Error('Your Google session is missing. Please sign in again.');
     }
-    setUser((prev) => ({ ...prev, username: chosenUsername }));
+    const savedProfile = await saveOwnUsername(userId, chosenUsername);
+    setUser((prev) => ({ ...prev, username: savedProfile.username }));
     setScreen('discover');
-    showToast(`Welcome to Gupshup, @${chosenUsername}!`);
+    showToast(`Welcome to Gupshup, @${savedProfile.username}!`);
   };
 
   const handleConnectDrive = async (): Promise<boolean> => {
@@ -806,11 +917,14 @@ export default function App() {
     setIsDemoPreview(false);
     refreshDriveState();
     setUser({ ...DEFAULT_USER_PROFILE });
-    setChats([...INITIAL_CHATS]);
-    setMessagesByChat({ ...INITIAL_MESSAGES_BY_CHAT });
-    setBlocked([...INITIAL_BLOCKED]);
-    setRecentSearches([...INITIAL_RECENT_SEARCHES]);
+    setContacts([]);
+    setChats([]);
+    setMessagesByChat({});
+    setBlocked([]);
+    setRecentSearches([]);
     setReports([]);
+    setActiveChatId('');
+    setSelectedContactId('');
     setScreen('welcome');
   };
 
@@ -838,7 +952,6 @@ export default function App() {
       <>
         <WelcomeScreen
           onGoogleSignIn={handleGoogleSignIn}
-          onDemoSignIn={handleDemoSignIn}
           onOpenPrivacy={() => navigateTo('privacy-policy')}
           authError={authError}
           isAuthResolving={authResolving}
@@ -875,16 +988,13 @@ export default function App() {
   }
 
   /* --------------------------- Authenticated Shell ------------------------- */
-  const activeContactForContactInfo =
-    contactsById[selectedContactId] ?? contacts[0];
-  const threadIdForContactInfo =
-    chats.find((c) => c.contactId === activeContactForContactInfo.id)?.id ??
-    `chat-${activeContactForContactInfo.id}`;
-  const messagesForContactInfo = messagesByChat[threadIdForContactInfo] ?? [];
-
-  const activeThreadContact =
-    chats.find((c) => c.id === activeChatId)?.contactId ?? 'sara';
-  const recipientName = contactsById[activeThreadContact]?.name ?? 'Contact';
+  const activeContactForContactInfo = selectedContactId
+    ? contactsById[selectedContactId]
+    : undefined;
+  const activeThreadContact = chats.find((c) => c.id === activeChatId)?.contactId ?? '';
+  const recipientName = activeThreadContact
+    ? contactsById[activeThreadContact]?.username ?? 'Gupshup member'
+    : 'Gupshup member';
   const threadPhotos = (messagesByChat[activeChatId] ?? []).filter(
     (m) => m.kind === 'photo' && m.photoUrl
   );
@@ -904,7 +1014,7 @@ export default function App() {
 
   const mobileBackTargets: Partial<Record<AppScreen, AppScreen>> = {
     'search-people': 'discover',
-    'contact-info': 'chat',
+    'contact-info': 'discover',
     'edit-profile': 'profile',
     settings: 'profile',
     'blocked-users': 'settings',
@@ -987,16 +1097,14 @@ export default function App() {
           />
         )}
 
-        {screen === 'contact-info' && (
+        {screen === 'contact-info' && activeContactForContactInfo && (
           <ContactInfoView
             contact={activeContactForContactInfo}
-            messages={messagesForContactInfo}
             isBlocked={blocked.some((b) => b.userId === activeContactForContactInfo.id)}
-            onBack={() => setScreen('chat')}
+            onBack={() => setScreen('discover')}
             onMessage={() => handleStartChatWithContact(activeContactForContactInfo.id)}
             onToggleBlock={() => handleToggleBlockUser(activeContactForContactInfo.id)}
             onOpenReport={() => setReportTargetId(activeContactForContactInfo.id)}
-            onOpenImageViewer={(msg) => setViewerMessage(msg)}
           />
         )}
 
@@ -1022,8 +1130,17 @@ export default function App() {
           <EditProfileView
             user={user}
             directoryHandles={directoryHandles}
-            onSave={(updates) => {
-              setUser((prev) => ({ ...prev, ...updates }));
+            onSave={async (updates) => {
+              const userId = supabaseSession?.user.id;
+              if (!userId || !supabase) {
+                throw new Error('Your Google session is missing. Please sign in again.');
+              }
+              if (updates.username) {
+                const savedProfile = await saveOwnUsername(userId, updates.username);
+                setUser((prev) => ({ ...prev, ...updates, username: savedProfile.username }));
+              } else {
+                setUser((prev) => ({ ...prev, ...updates }));
+              }
               setScreen('profile');
               showToast('Profile changes saved');
             }}
