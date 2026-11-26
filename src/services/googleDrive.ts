@@ -44,7 +44,7 @@ export function clearDriveToken(): void {
   connectedGoogleEmail = null;
 }
 
-export async function signInWithGoogleSupabase(): Promise<void> {
+async function startGoogleOAuth(scopes?: string): Promise<void> {
   if (!supabase) {
     const missing = getMissingSupabaseEnvVars().join(' and ');
     throw new Error(
@@ -56,7 +56,7 @@ export async function signInWithGoogleSupabase(): Promise<void> {
     provider: 'google',
     options: {
       redirectTo: getSupabaseRedirectUrl(),
-      scopes: DRIVE_SCOPES,
+      ...(scopes ? { scopes } : {}),
       queryParams: {
         access_type: 'offline',
         prompt: 'select_account',
@@ -71,6 +71,16 @@ export async function signInWithGoogleSupabase(): Promise<void> {
   if (!data?.url) {
     throw new Error('Could not start Google sign-in via Supabase. Please try again.');
   }
+}
+
+export async function signInWithGoogleSupabase(): Promise<void> {
+  // Keep primary authentication limited to standard identity scopes.
+  // Google Drive permissions are requested only when the user explicitly connects Drive.
+  await startGoogleOAuth();
+}
+
+export async function connectGoogleDrive(): Promise<void> {
+  await startGoogleOAuth(DRIVE_SCOPES);
 }
 
 export async function signOutSupabase(): Promise<void> {
