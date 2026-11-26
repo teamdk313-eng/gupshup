@@ -130,6 +130,7 @@ function resolveInitialScreen(): AppScreen {
 interface GupshupProfileRow {
   id: string;
   username: string;
+  last_seen_at?: string | null;
 }
 
 interface GupshupMessageRow {
@@ -224,7 +225,7 @@ async function getDirectoryProfiles(currentUserId: string): Promise<GupshupProfi
   if (!supabase) throw new Error('Supabase is not configured.');
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, username')
+    .select('id, username, last_seen_at')
     .neq('id', currentUserId)
     .order('username', { ascending: true });
   if (error) throw new Error(error.message || 'Unable to load the member directory.');
@@ -269,6 +270,7 @@ export default function App() {
   // Toast
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimerRef = useRef<number | null>(null);
+  const presenceChannelRef = useRef<ReturnType<NonNullable<typeof supabase>['channel']> | null>(null);
 
   const showToast = useCallback(
     (message: string, actionLabel?: string, onAction?: () => void) => {
@@ -500,6 +502,7 @@ export default function App() {
             joinedAgo: '',
             localTime: '',
             isOnline: false,
+            lastSeenAt: member.last_seen_at ?? null,
           })));
         };
 
@@ -535,6 +538,100 @@ export default function App() {
       }
     };
   }, [supabaseSession?.user.id, initialUrlState.requested]);
+
+  useEffect(() => {
+    const userId = supabaseSession?.user.id;
+    if (!userId || !supabase) {
+      presenceChannelRef.current = null;
+      return;
+    }
+
+    let active = true;
+    const channel = supabase.channel('gupshup-presence');
+    presenceChannelRef.current = channel;
+
+    const syncPresence = () => {
+      if (!active) return;
+      const state = channel.presenceState() as Record<string, Array<{
+        user_id?: string;
+        typing_to?: string | null;
+        activity?: string | null;
+      }>>;
+      const presences = Object.values(state).flat();
+      const onlineIds = new Set(presences.map((presence) => presence.user_id).filter((id): id is string => Boolean(id)));
+      setContacts((prev) => prev.map((contact) => ({
+        ...contact,
+        isOnline: onlineIds.has(contact.id),
+      })));
+      setChats((prev) => prev.map((thread) => {
+        const activity = presences.find((presence) =>
+          presence.user_id === thread.contactId &&
+          presence.typing_to === userId &&
+          Boolean(presence.activity)
+        )?.activity;
+        return {
+          ...thread,
+          isTyping: Boolean(activity),
+          activityLabel: activity === 'recording'
+            ? 'recording voice...'
+            : activity === 'sending_photo'
+              ? 'sending photo...'
+              : activity === 'typing'
+                ? 'typing...'
+                : undefined,
+        };
+      }));
+    };
+
+    channel
+      .on('presence', { event: 'sync' }, syncPresence)
+      .on('presence', { event: 'join' }, syncPresence)
+      .on('presence', { event: 'leave' }, syncPresence)
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED' && active) {
+          await channel.track({
+            user_id: userId,
+            online_at: new Date().toISOString(),
+            typing_to: null,
+            activity: null,
+          });
+        }
+      });
+
+    const markLastSeen = () => {
+      void supabase.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', userId);
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') markLastSeen();
+    };
+    window.addEventListener('pagehide', markLastSeen);
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      active = false;
+      window.removeEventListener('pagehide', markLastSeen);
+      document.removeEventListener('visibilitychange', onVisibility);
+      void channel.untrack();
+      void supabase.removeChannel(channel);
+      if (presenceChannelRef.current === channel) presenceChannelRef.current = null;
+      markLastSeen();
+    };
+  }, [supabaseSession?.user.id]);
+
+  const updatePresenceActivity = useCallback((
+    recipientId: string | null,
+    activity: 'typing' | 'recording' | 'sending_photo' | null
+  ) => {
+    const userId = supabaseSession?.user.id;
+    const channel = presenceChannelRef.current;
+    if (!userId || !channel) return;
+    void channel.track({
+      user_id: userId,
+      online_at: new Date().toISOString(),
+      typing_to: recipientId,
+      activity,
+    });
+  }, [supabaseSession?.user.id]);
 
   useEffect(() => {
     const userId = supabaseSession?.user.id;
