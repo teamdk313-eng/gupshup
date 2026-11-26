@@ -504,6 +504,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                     <Avatar
                       name={person.name}
                       initials={person.initials}
+                    imageUrl={person.avatarUrl}
                       size="sm"
                       isOnline={person.isOnline}
                       bgClass={person.avatarBgClass}
@@ -575,6 +576,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                   <Avatar
                     name={contact.name}
                     initials={contact.initials}
+                    imageUrl={contact.avatarUrl}
                     size="md"
                     isOnline={!isBlocked && contact.isOnline}
                     showOnlineDot={!isBlocked}
@@ -696,6 +698,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                   <Avatar
                     name={activeContact.name}
                     initials={activeContact.initials}
+                    imageUrl={activeContact.avatarUrl}
                     size="sm"
                     isOnline={!isContactBlocked && activeContact.isOnline}
                     showOnlineDot={!isContactBlocked}
