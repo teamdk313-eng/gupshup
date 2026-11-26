@@ -99,6 +99,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
   const recTimerRef = useRef<number | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
+  const recordedBlobRef = useRef<Blob | null>(null);
 
   // Gemini 4 Carbon High Thinking Mode drawer
   const [showInsights, setShowInsights] = useState(false);
@@ -179,35 +180,42 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
     setRecordingSec(0);
     setRecordedWaveform([10, 16, 12, 22, 14, 18, 10]);
     recordedChunksRef.current = [];
+    recordedBlobRef.current = null;
 
-    if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const recorder = new MediaRecorder(stream);
-        mediaRecorderRef.current = recorder;
-        recorder.ondataavailable = (ev) => {
-          if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
-        };
-        recorder.onstop = () => {
-          stream.getTracks().forEach((t) => t.stop());
-          if (recordedChunksRef.current.length > 0) {
-            const blob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
-            setRecordedAudioUrl(URL.createObjectURL(blob));
-          }
-        };
-        recorder.start();
-        setRecordingState('recording');
-        startRecordingTimer();
-        return;
-      } catch {
-        setMicWarning(
-          'Microphone permission unavailable in this browser — recording a timed voice note preview instead.'
-        );
-      }
+    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function' || typeof MediaRecorder === 'undefined') {
+      setMicWarning('اس براؤزر میں وائس ریکارڈنگ دستیاب نہیں۔ Chrome یا کسی جدید براؤزر میں کوشش کریں۔');
+      setRecordingState('idle');
+      return;
     }
 
-    setRecordingState('recording');
-    startRecordingTimer();
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const supportedMime = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4']
+        .find((mime) => MediaRecorder.isTypeSupported(mime));
+      const recorder = supportedMime
+        ? new MediaRecorder(stream, { mimeType: supportedMime })
+        : new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      recorder.ondataavailable = (ev) => {
+        if (ev.data.size > 0) recordedChunksRef.current.push(ev.data);
+      };
+      recorder.onstop = () => {
+        stream?.getTracks().forEach((track) => track.stop());
+        if (recordedChunksRef.current.length > 0) {
+          const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
+          recordedBlobRef.current = blob;
+          setRecordedAudioUrl(URL.createObjectURL(blob));
+        }
+      };
+      recorder.start();
+      setRecordingState('recording');
+      startRecordingTimer();
+    } catch (error) {
+      stream?.getTracks().forEach((track) => track.stop());
+      setMicWarning(error instanceof Error ? error.message : 'مائیکروفون کی اجازت نہیں ملی۔');
+      setRecordingState('idle');
+    }
   };
 
   const handlePauseOrResumeRecording = () => {
@@ -249,28 +257,36 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
     setRecordingState('idle');
     setRecordingSec(0);
     setRecordedAudioUrl(undefined);
+    recordedBlobRef.current = null;
     setMicWarning(null);
   };
 
-  const handleSendRecordedVoice = () => {
+  const handleSendRecordedVoice = async () => {
     if (!activeThread) return;
     const finalSec = Math.max(1, recordingSec);
-    if (
-      mediaRecorderRef.current &&
-      (mediaRecorderRef.current.state === 'recording' ||
-        mediaRecorderRef.current.state === 'paused')
-    ) {
-      mediaRecorderRef.current.stop();
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== 'inactive') {
+      await new Promise<void>((resolve) => {
+        recorder.addEventListener('stop', () => resolve(), { once: true });
+        recorder.stop();
+      });
     }
     stopRecordingTimer();
+    const blob = recordedBlobRef.current;
+    if (!blob || !blob.size) {
+      setMicWarning('وائس ریکارڈنگ محفوظ نہیں ہوئی۔ دوبارہ ریکارڈ کریں۔');
+      return;
+    }
+    const audioUrl = URL.createObjectURL(blob);
     onSendVoice(activeThread.id, {
       durationSec: finalSec,
       waveform: recordedWaveform,
-      audioUrl: recordedAudioUrl,
+      audioUrl,
     });
     setRecordingState('idle');
     setRecordingSec(0);
     setRecordedAudioUrl(undefined);
+    recordedBlobRef.current = null;
     setMicWarning(null);
   };
 
