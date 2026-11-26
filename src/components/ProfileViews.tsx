@@ -27,7 +27,7 @@ interface MyProfileViewProps {
   messagesByChat: Record<string, ChatMessage[]>;
   blocked: BlockedEntry[];
   onNavigate: (screen: AppScreen) => void;
-  onUpdateAvatar: (dataUrl: string) => void;
+  onUpdateAvatar: (dataUrl: string | undefined) => Promise<void>;
   onCopyHandle: () => void;
 }
 
@@ -44,7 +44,7 @@ export const MyProfileView: React.FC<MyProfileViewProps> = ({
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const stats = computeProfileStats(chats, messagesByChat, blocked);
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
@@ -55,8 +55,11 @@ export const MyProfileView: React.FC<MyProfileViewProps> = ({
     }
     setAvatarError(null);
     const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') onUpdateAvatar(reader.result);
+    reader.onload = async () => {
+      if (typeof reader.result === 'string') {
+        try { await onUpdateAvatar(reader.result); }
+        catch (error) { setAvatarError(error instanceof Error ? error.message : 'Unable to update profile photo.'); }
+      }
     };
     reader.readAsDataURL(file);
   };
