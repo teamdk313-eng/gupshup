@@ -57,6 +57,7 @@ export interface ContactUser {
   initials: string;
   avatarBgClass: string;
   avatarTextClass: string;
+  avatarUrl?: string;
   bio: string;
   joinedLabel: string;
   joinedAgo: string;
