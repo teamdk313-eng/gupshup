@@ -62,6 +62,7 @@ export interface ContactUser {
   joinedAgo: string;
   localTime: string;
   isOnline: boolean;
+  lastSeenAt?: string | null;
   isNew?: boolean;
   verified?: boolean;
   mutualFriends?: number;
@@ -74,6 +75,7 @@ export interface ChatThread {
   unreadCount: number;
   pinned?: boolean;
   isTyping?: boolean;
+  activityLabel?: string;
   lastActivityLabel: string;
   lastActivityOrder: number;
 }
