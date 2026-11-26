@@ -228,24 +228,59 @@ async function saveOwnUsername(userId: string, rawUsername: string): Promise<Gup
 
 async function uploadAndSaveProfileAvatar(userId: string, dataUrl: string | undefined): Promise<string | undefined> {
   if (!supabase) throw new Error('Supabase is not configured.');
+
+  const { data: currentProfile, error: readError } = await supabase
+    .from('profiles')
+    .select('avatar_url')
+    .eq('id', userId)
+    .maybeSingle();
+  if (readError) throw new Error(readError.message || 'Unable to load your current profile photo.');
+  if (!currentProfile) throw new Error('Your Gupshup profile was not found. Please sign in again.');
+
+  const previousPath = currentProfile.avatar_url as string | null;
+
   if (!dataUrl) {
-    const { error } = await supabase.from('profiles').update({ avatar_url: null, updated_at: new Date().toISOString() }).eq('id', userId);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ avatar_url: null, updated_at: new Date().toISOString() })
+      .eq('id', userId);
     if (error) throw new Error(error.message || 'Unable to remove profile photo.');
+    if (previousPath) {
+      await supabase.storage.from('profile-avatars').remove([previousPath]);
+    }
     return undefined;
   }
-  const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/);
+
+  const match = dataUrl.match(/^data:(image\\/(?:jpeg|png|webp|gif));base64,(.+)$/);
   if (!match) throw new Error('Choose a JPG, PNG, WEBP or GIF image.');
   const mimeType = match[1];
   const bytes = Uint8Array.from(atob(match[2]), (char) => char.charCodeAt(0));
   if (bytes.byteLength > 5 * 1024 * 1024) throw new Error('Profile photo must be 5 MB or smaller.');
+
   const extension = mimeType === 'image/jpeg' ? 'jpg' : mimeType.split('/')[1];
-  const path = `${userId}/avatar.${extension}`;
-  const { error: uploadError } = await supabase.storage.from('profile-avatars').upload(path, new Blob([bytes], { type: mimeType }), {
-    upsert: true, contentType: mimeType, cacheControl: '3600',
-  });
+  // A new object path for every upload prevents browsers/CDNs from showing a cached old avatar.
+  const path = `${userId}/avatar-${crypto.randomUUID()}.${extension}`;
+  const { error: uploadError } = await supabase.storage.from('profile-avatars').upload(
+    path,
+    new Blob([bytes], { type: mimeType }),
+    { upsert: false, contentType: mimeType, cacheControl: '3600' }
+  );
   if (uploadError) throw new Error(uploadError.message || 'Unable to upload profile photo.');
-  const { error: profileError } = await supabase.from('profiles').update({ avatar_url: path, updated_at: new Date().toISOString() }).eq('id', userId);
-  if (profileError) throw new Error(profileError.message || 'Unable to save profile photo.');
+
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .update({ avatar_url: path, updated_at: new Date().toISOString() })
+    .eq('id', userId);
+
+  if (profileError) {
+    await supabase.storage.from('profile-avatars').remove([path]);
+    throw new Error(profileError.message || 'Unable to save profile photo.');
+  }
+
+  if (previousPath && previousPath !== path) {
+    await supabase.storage.from('profile-avatars').remove([previousPath]);
+  }
+
   return supabase.storage.from('profile-avatars').getPublicUrl(path).data.publicUrl;
 }
 
