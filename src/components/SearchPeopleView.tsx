@@ -202,6 +202,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
                     <Avatar
                       name={person.name}
                       initials={person.initials}
+                    imageUrl={person.avatarUrl}
                       size="md"
                       showOnlineDot={false}
                       bgClass={person.avatarBgClass}
@@ -250,6 +251,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
                   <Avatar
                     name={person.name}
                     initials={person.initials}
+                    imageUrl={person.avatarUrl}
                     size="md"
                     showOnlineDot={false}
                     bgClass={person.avatarBgClass}
