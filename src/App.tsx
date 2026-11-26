@@ -173,7 +173,11 @@ async function mapDatabaseMessage(row: GupshupMessageRow, currentUserId: string)
     text: row.kind === 'text' || row.kind === 'photo' ? (row.body || undefined) : undefined,
     photoUrl: row.kind === 'photo' ? mediaUrl : undefined,
     photoName: row.kind === 'photo' ? (row.media_name ?? undefined) : undefined,
-    photoSize: row.kind === 'photo' && row.media_size ? String(row.media_size) : undefined,
+    photoSize: row.kind === 'photo' && row.media_size
+      ? row.media_size >= 1024 * 1024
+        ? `${(row.media_size / (1024 * 1024)).toFixed(1)} MB`
+        : `${Math.max(1, Math.round(row.media_size / 1024))} KB`
+      : undefined,
     voiceAudioUrl: row.kind === 'voice' ? mediaUrl : undefined,
     voiceDurationSec: row.kind === 'voice' ? (row.duration_seconds ?? undefined) : undefined,
     voiceWaveform: row.kind === 'voice' ? (row.waveform ?? undefined) : undefined,
@@ -1006,7 +1010,7 @@ export default function App() {
       const extension = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
       uploadedPath = `${senderId}/${contactId}/${crypto.randomUUID()}.${extension}`;
       const { error: uploadError } = await supabase.storage.from('chat-media').upload(uploadedPath, blob, {
-        contentType: blob.type,
+        contentType: blob.type.split(';')[0],
         upsert: false,
       });
       if (uploadError) throw uploadError;
@@ -1017,7 +1021,7 @@ export default function App() {
         body: payload.caption || '',
         kind: 'photo',
         media_path: uploadedPath,
-        media_mime_type: blob.type,
+        media_mime_type: blob.type.split(';')[0],
         media_name: payload.photoName,
         media_size: blob.size,
         reply_to_id: replyFields.replyToId ?? null,
@@ -1080,7 +1084,7 @@ export default function App() {
       const extension = blob.type.includes('ogg') ? 'ogg' : blob.type.includes('mp4') ? 'm4a' : 'webm';
       uploadedPath = `${senderId}/${contactId}/${crypto.randomUUID()}.${extension}`;
       const { error: uploadError } = await supabase.storage.from('chat-media').upload(uploadedPath, blob, {
-        contentType: blob.type,
+        contentType: blob.type.split(';')[0],
         upsert: false,
       });
       if (uploadError) throw uploadError;
@@ -1091,7 +1095,7 @@ export default function App() {
         body: '',
         kind: 'voice',
         media_path: uploadedPath,
-        media_mime_type: blob.type,
+        media_mime_type: blob.type.split(';')[0],
         media_name: 'Voice message',
         media_size: blob.size,
         duration_seconds: payload.durationSec,
