@@ -377,6 +377,7 @@ export default function App() {
     }
 
     let active = true;
+    let directoryChannel: ReturnType<NonNullable<typeof supabase>['channel']> | null = null;
 
     const syncProfileAndDirectory = async () => {
       setAuthResolving(true);
@@ -430,21 +431,39 @@ export default function App() {
           setScreen('onboarding');
         }
 
-        const directory = await getDirectoryProfiles(userId);
+        const refreshDirectory = async () => {
+          const directory = await getDirectoryProfiles(userId);
+          if (!active) return;
+          setContacts(directory.map((member) => ({
+            id: member.id,
+            name: member.username,
+            username: member.username,
+            initials: member.username.slice(0, 2).toUpperCase(),
+            avatarBgClass: 'bg-primary-fixed',
+            avatarTextClass: 'text-on-primary-fixed',
+            bio: '',
+            joinedLabel: 'Gupshup member',
+            joinedAgo: '',
+            localTime: '',
+            isOnline: false,
+          })));
+        };
+
+        await refreshDirectory();
         if (!active) return;
-        setContacts(directory.map((member) => ({
-          id: member.id,
-          name: member.username,
-          username: member.username,
-          initials: member.username.slice(0, 2).toUpperCase(),
-          avatarBgClass: 'bg-primary-fixed',
-          avatarTextClass: 'text-on-primary-fixed',
-          bio: '',
-          joinedLabel: 'Gupshup member',
-          joinedAgo: '',
-          localTime: '',
-          isOnline: false,
-        })));
+
+        // Keep already-open member directories in sync when another account
+        // creates or changes its public username on a different device.
+        directoryChannel = supabase
+          .channel(`member-directory-${userId}`)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'profiles' },
+            () => {
+              void refreshDirectory();
+            }
+          )
+          .subscribe();
       } catch (error) {
         if (!active) return;
         setAuthError(error instanceof Error ? error.message : 'Unable to load your Gupshup profile.');
@@ -457,6 +476,9 @@ export default function App() {
     void syncProfileAndDirectory();
     return () => {
       active = false;
+      if (directoryChannel && supabase) {
+        void supabase.removeChannel(directoryChannel);
+      }
     };
   }, [supabaseSession?.user.id, initialUrlState.requested]);
 
