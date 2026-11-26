@@ -18,7 +18,7 @@ interface AttachmentModalProps {
     photoSize: string;
     photoDimensions?: string;
     caption: string;
-  }) => void;
+  }) => Promise<void>;
   onSendDriveFile: (payload: {
     driveFile: DriveAttachmentMeta;
     caption: string;
@@ -170,21 +170,25 @@ export const AttachmentModal: React.FC<AttachmentModalProps> = ({
     }
   };
 
-  const handleConfirmSend = () => {
+  const handleConfirmSend = async () => {
     if (previewUrl) {
-      setUploadProgress(40);
-      setTimeout(() => {
-        setUploadProgress(100);
-        onSendPhoto({
+      setUploadProgress(10);
+      setErrorMsg(null);
+      try {
+        await onSendPhoto({
           photoUrl: previewUrl,
           photoName: fileName || 'photo.jpg',
           photoSize: fileSize || '1.2 MB',
           photoDimensions: dimensions,
           caption: caption.trim(),
         });
+        setUploadProgress(100);
         resetSelection();
         onClose();
-      }, 180);
+      } catch (err) {
+        setUploadProgress(null);
+        setErrorMsg(err instanceof Error ? err.message : 'تصویر اپلوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔');
+      }
       return;
     }
 
