@@ -29,6 +29,7 @@ import {
 } from './data/seedData';
 import { supabase } from './lib/supabase';
 import {
+  connectGoogleDrive,
   getDriveConnectionState,
   signInWithGoogleSupabase,
   signOutSupabase,
@@ -366,7 +367,7 @@ export default function App() {
   };
 
   const handleConnectDrive = async (): Promise<boolean> => {
-    await signInWithGoogleSupabase();
+    await connectGoogleDrive();
     return false;
   };
 
