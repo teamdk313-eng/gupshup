@@ -132,6 +132,42 @@ interface GupshupProfileRow {
   username: string;
 }
 
+interface GupshupMessageRow {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  body: string;
+  reply_to_id: string | null;
+  reply_to_snippet: string | null;
+  reply_to_sender_name: string | null;
+  created_at: string;
+}
+
+function mapDatabaseMessage(row: GupshupMessageRow, currentUserId: string): {
+  chatId: string;
+  contactId: string;
+  message: ChatMessage;
+} {
+  const isOwnMessage = row.sender_id === currentUserId;
+  const contactId = isOwnMessage ? row.receiver_id : row.sender_id;
+  const createdAtMs = Date.parse(row.created_at) || Date.now();
+  const chatId = `chat-${contactId}`;
+  const message: ChatMessage = {
+    id: row.id,
+    chatId,
+    senderId: isOwnMessage ? 'me' : row.sender_id,
+    kind: 'text',
+    text: row.body,
+    replyToId: row.reply_to_id ?? undefined,
+    replyToSnippet: row.reply_to_snippet ?? undefined,
+    replyToSenderName: row.reply_to_sender_name ?? undefined,
+    timestamp: new Date(createdAtMs).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+    createdAtMs,
+    status: isOwnMessage ? 'sent' : 'delivered',
+  };
+  return { chatId, contactId, message };
+}
+
 async function getOwnProfile(userId: string): Promise<GupshupProfileRow | null> {
   if (!supabase) throw new Error('Supabase is not configured.');
   const { data, error } = await supabase
