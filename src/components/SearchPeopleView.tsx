@@ -87,7 +87,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
             Search People
           </h2>
           <p className="text-xs sm:text-sm text-on-surface-variant">
-            Find anyone on Gupshup by name, @username, or bio
+            Find Gupshup members using their unique public @username
           </p>
         </div>
       </div>
@@ -102,7 +102,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search @username or name (e.g. sara, bilal, zainab)..."
+          placeholder="Search by @username..."
           className="w-full h-13 pl-12 pr-12 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 shadow-xs text-[15px] text-on-surface placeholder:text-on-surface-variant outline-none focus:ring-2 focus:ring-primary-container/25 transition-all"
         />
         {query && (

@@ -46,7 +46,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
             People on Gupshup
           </h2>
           <p className="text-sm text-on-surface-variant mt-1">
-            Discover creators, engineers, and friends for instant 1-to-1 conversations.
+            Find real Gupshup members by their unique public @username.
           </p>
         </div>
 
@@ -60,7 +60,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Filter people or @handle..."
+              placeholder="Search @username..."
               className="w-full h-11 pl-10 pr-14 rounded-xl bg-surface-container-lowest border border-outline-variant/25 text-sm text-on-surface placeholder:text-on-surface-variant outline-none focus:ring-2 focus:ring-primary-container/25 transition-all"
             />
             {query ? (

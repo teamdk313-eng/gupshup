@@ -31,7 +31,7 @@ export const PRIVACY_SECTIONS = [
     id: 'who-can-see-it',
     number: '03',
     title: 'Who can see it',
-    body: 'Other people on Gupshup can see your display name, @username, bio, and online indicator (if enabled). Direct messages, photos, and voice notes are visible only to you and the recipient in that conversation.',
+    body: 'Only your unique public @username is shown in the Gupshup member directory. Your Google email address and other private account details are not displayed to other members.',
   },
   {
     id: 'blocking-and-reporting',
