@@ -410,8 +410,8 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
   return (
     <div
       className={`${
-        mode === 'chat' ? 'h-[100dvh]' : 'h-[calc(100dvh-3.5rem-4rem)]'
-      } lg:h-[calc(100vh-4rem)] flex bg-surface overflow-hidden`}
+        mode === 'chat' ? 'h-[100dvh] max-h-[100dvh]' : 'h-[calc(100dvh-3.5rem-4rem)]'
+      } lg:h-[calc(100vh-4rem)] flex min-w-0 w-full bg-surface overflow-hidden`}
     >
       {/* LEFT PANE: INBOX LIST */}
       <section
@@ -655,7 +655,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
         aria-label="Active Conversation"
         className={`${
           showThreadPane ? 'flex' : 'hidden lg:flex'
-        } flex-1 flex-col bg-surface h-full min-w-0 relative`}
+        } flex-1 flex-col bg-surface h-full min-h-0 min-w-0 relative`}
       >
         {!activeThread || !activeContact ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
@@ -951,7 +951,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
             )}
 
             {/* Message Stream */}
-            <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-2.5">
+            <div className="flex-1 min-h-0 min-w-0 overflow-y-auto overscroll-contain px-3 sm:px-6 py-4 sm:py-5 space-y-2.5">
               {/* Date Pill */}
               <div className="flex justify-center my-2">
                 <span className="px-3 py-1 rounded-full bg-surface-container-low text-[11px] font-semibold text-on-surface-variant">
@@ -990,7 +990,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                       className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                     >
                       <div
-                        className={`max-w-[82%] sm:max-w-[70%] group relative ${
+                        className={`max-w-[calc(100%-0.5rem)] sm:max-w-[70%] min-w-0 group relative ${
                           msg.kind === 'photo' ? 'p-1.5' : 'px-4 py-2.5'
                         } ${cornerClass} ${
                           isMe
@@ -1036,7 +1036,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
 
                         {/* Voice Note Bubble */}
                         {msg.kind === 'voice' && (
-                          <div className="flex items-center gap-3 min-w-[220px] sm:min-w-[250px] py-0.5">
+                          <div className="flex items-center gap-2 sm:gap-3 w-full min-w-0 max-w-full py-0.5">
                             <button
                               type="button"
                               aria-label={isPlaying ? 'Pause voice note' : 'Play voice note'}
@@ -1283,7 +1283,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="p-3 sm:p-4 bg-surface-container-lowest border-t border-outline-variant/20 space-y-2 relative">
+              <div className="p-2.5 sm:p-4 pb-safe bg-surface-container-lowest border-t border-outline-variant/20 space-y-2 relative w-full min-w-0">
                 {replyTarget && (
                   <div className="px-3.5 py-2 rounded-xl bg-surface-container-low border-l-3 border-primary flex items-center justify-between gap-3">
                     <div className="min-w-0">
@@ -1327,17 +1327,17 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                   </div>
                 )}
 
-                <form onSubmit={handleSubmitText} className="flex items-center gap-2">
+                <form onSubmit={handleSubmitText} className="flex items-center gap-1.5 sm:gap-2 w-full min-w-0">
                   <button
                     type="button"
-                    aria-label="Attach photo or Google Drive file"
+                    aria-label="Send photo or file"
                     onClick={onOpenAttachmentModal}
-                    className="w-11 h-11 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-primary flex items-center justify-center shrink-0 transition-colors"
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-primary flex items-center justify-center shrink-0 transition-colors"
                   >
                     <span className="material-symbols-outlined text-[22px]">add</span>
                   </button>
 
-                  <div className="flex-1 h-12 rounded-2xl bg-surface-container-low flex items-center px-3.5 gap-2 focus-within:ring-2 focus-within:ring-primary-container/25">
+                  <div className="flex-1 min-w-0 h-12 rounded-2xl bg-surface-container-low flex items-center px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 focus-within:ring-2 focus-within:ring-primary-container/25">
                     <input
                       ref={composerInputRef}
                       type="text"
@@ -1348,7 +1348,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                           ? 'Type a message (failure test active)...'
                           : `Message ${activeContact.name.split(' ')[0]}...`
                       }
-                      className="flex-1 bg-transparent text-sm text-on-surface placeholder:text-on-surface-variant outline-none"
+                      className="flex-1 min-w-0 w-full bg-transparent text-sm text-on-surface placeholder:text-on-surface-variant outline-none"
                     />
                     <button
                       type="button"
@@ -1368,16 +1368,15 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                     >
                       <span className="material-symbols-outlined text-[20px]">send</span>
                     </button>
-                  ) : (
-                    <button
-                      type="button"
-                      aria-label="Record voice message"
-                      onClick={() => void handleStartRecording()}
-                      className="w-11 h-11 rounded-full bg-primary-fixed hover:bg-primary-container text-primary hover:text-on-primary flex items-center justify-center shrink-0 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[21px]">mic</span>
-                    </button>
-                  )}
+                  ) : null}
+                  <button
+                    type="button"
+                    aria-label="Record voice message"
+                    onClick={() => void handleStartRecording()}
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-primary-fixed hover:bg-primary-container text-primary hover:text-on-primary flex items-center justify-center shrink-0 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[21px]">mic</span>
+                  </button>
                 </form>
               </div>
             )}
