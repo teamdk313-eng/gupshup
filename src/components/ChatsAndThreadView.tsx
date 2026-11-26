@@ -42,6 +42,10 @@ interface ChatsAndThreadViewProps {
     chatId: string,
     payload: { durationSec: number; waveform: number[]; audioUrl?: string }
   ) => void;
+  onPresenceActivity?: (
+    recipientId: string | null,
+    activity: 'typing' | 'recording' | 'sending_photo' | null
+  ) => void;
   onOpenAttachmentModal: () => void;
   onOpenImageViewer: (msg: ChatMessage) => void;
   onRequestBackupToDrive: (chatId: string) => void;
@@ -73,6 +77,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
   onSendText,
   onRetryFailedMessage,
   onSendVoice,
+  onPresenceActivity,
   onOpenAttachmentModal,
   onOpenImageViewer,
   onRequestBackupToDrive,
@@ -100,6 +105,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const recordedBlobRef = useRef<Blob | null>(null);
+  const typingTimerRef = useRef<number | null>(null);
 
   // Gemini 4 Carbon High Thinking Mode drawer
   const [showInsights, setShowInsights] = useState(false);
@@ -144,6 +150,8 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
     setInsightError(null);
     setInsightQuestion('');
     setMicWarning(null);
+    if (typingTimerRef.current !== null) window.clearTimeout(typingTimerRef.current);
+    onPresenceActivity?.(null, null);
   }, [activeThread?.id]);
 
   useEffect(() => {
@@ -209,10 +217,12 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
         }
       };
       recorder.start();
+      if (activeThread) onPresenceActivity?.(activeThread.contactId, 'recording');
       setRecordingState('recording');
       startRecordingTimer();
     } catch (error) {
       stream?.getTracks().forEach((track) => track.stop());
+      onPresenceActivity?.(null, null);
       setMicWarning(error instanceof Error ? error.message : 'مائیکروفون کی اجازت نہیں ملی۔');
       setRecordingState('idle');
     }
@@ -244,6 +254,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
       mediaRecorderRef.current.stop();
     }
     setRecordingState('preview');
+    onPresenceActivity?.(null, null);
   };
 
   const handleCancelRecording = () => {
@@ -259,6 +270,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
     setRecordedAudioUrl(undefined);
     recordedBlobRef.current = null;
     setMicWarning(null);
+    onPresenceActivity?.(null, null);
   };
 
   const handleSendRecordedVoice = async () => {
@@ -278,6 +290,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
       return;
     }
     const audioUrl = URL.createObjectURL(blob);
+    onPresenceActivity?.(null, null);
     onSendVoice(activeThread.id, {
       durationSec: finalSec,
       waveform: recordedWaveform,
@@ -320,11 +333,26 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
     setPlaybackRate(next);
   };
 
+  const handleDraftChange = (value: string) => {
+    setDraft(value);
+    if (!activeThread) return;
+    onPresenceActivity?.(activeThread.contactId, value.trim() ? 'typing' : null);
+    if (typingTimerRef.current !== null) window.clearTimeout(typingTimerRef.current);
+    if (value.trim()) {
+      typingTimerRef.current = window.setTimeout(() => {
+        onPresenceActivity?.(null, null);
+        typingTimerRef.current = null;
+      }, 1800);
+    }
+  };
+
   const handleSubmitText = (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeThread || isContactBlocked) return;
     const trimmed = draft.trim();
     if (!trimmed) return;
+    if (typingTimerRef.current !== null) window.clearTimeout(typingTimerRef.current);
+    onPresenceActivity?.(null, null);
     onSendText(activeThread.id, trimmed, simulateNextFail);
     setDraft('');
     setSimulateNextFail(false);
@@ -689,10 +717,12 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                       {isContactBlocked
                         ? 'blocked'
                         : activeThread.isTyping
-                          ? 'typing...'
+                          ? (activeThread.activityLabel || 'typing...')
                           : activeContact.isOnline
                             ? 'online'
-                            : `@${activeContact.username}`}
+                            : activeContact.lastSeenAt
+                              ? `last seen ${new Date(activeContact.lastSeenAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`
+                              : `@${activeContact.username}`}
                     </div>
                   </div>
                 </button>
@@ -1312,7 +1342,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                       ref={composerInputRef}
                       type="text"
                       value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
+                      onChange={(e) => handleDraftChange(e.target.value)}
                       placeholder={
                         simulateNextFail
                           ? 'Type a message (failure test active)...'
