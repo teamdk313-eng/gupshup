@@ -147,6 +147,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
                   <Avatar
                     name={person.name}
                     initials={person.initials}
+                    imageUrl={person.avatarUrl}
                     size="md"
                     showOnlineDot={false}
                     bgClass={person.avatarBgClass}
