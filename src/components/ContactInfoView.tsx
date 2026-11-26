@@ -41,7 +41,7 @@ export const ContactInfoView: React.FC<ContactInfoViewProps> = ({
       )}
 
       <div className="bg-surface-container-lowest rounded-3xl p-6 sm:p-8 shadow-[0_1px_4px_rgba(11,28,48,0.04)] border border-outline-variant/15 flex flex-col items-center text-center">
-        <Avatar name={contact.username} initials={contact.initials} size="xl" showOnlineDot={false}
+        <Avatar name={contact.username} initials={contact.initials} imageUrl={contact.avatarUrl} size="xl" showOnlineDot={false}
           bgClass={contact.avatarBgClass} textClass={contact.avatarTextClass} />
         <h2 className="mt-4 text-2xl font-bold text-on-surface tracking-tight">{publicId}</h2>
         <p className="text-sm text-on-surface-variant mt-1">Public Gupshup ID</p>
