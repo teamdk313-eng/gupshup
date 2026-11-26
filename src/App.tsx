@@ -773,31 +773,98 @@ export default function App() {
     };
   };
 
-  const handleSendText = (chatId: string, text: string, simulateFailure = false) => {
+  const handleSendText = async (
+    chatId: string,
+    text: string,
+    simulateFailure = false
+  ): Promise<boolean> => {
+    const trimmedText = text.trim();
+    if (!trimmedText) return false;
+
     const now = Date.now();
-    const msg: ChatMessage = {
-      id: `m-${now}`,
-      chatId,
-      senderId: 'me',
-      kind: 'text',
-      text,
-      timestamp: getCurrentTimeLabel(),
-      createdAtMs: now,
-      status: simulateFailure ? 'failed' : user.readReceipts ? 'delivered' : 'sent',
-      ...buildReplyFields(),
-    };
-    appendMessage(chatId, msg);
-    setReplyTarget(null);
+    const replyFields = buildReplyFields();
+
+    if (simulateFailure) {
+      appendMessage(chatId, {
+        id: `failed-${now}`,
+        chatId,
+        senderId: 'me',
+        kind: 'text',
+        text: trimmedText,
+        timestamp: getCurrentTimeLabel(),
+        createdAtMs: now,
+        status: 'failed',
+        ...replyFields,
+      });
+      setReplyTarget(null);
+      return false;
+    }
+
+    const senderId = supabaseSession?.user.id;
+    const contactId = chats.find((thread) => thread.id === chatId)?.contactId ??
+      (chatId.startsWith('chat-') ? chatId.slice(5) : '');
+
+    if (!senderId || !supabase || !contactId) {
+      showToast('پیغام نہیں بھیجا جا سکا۔ دوبارہ لاگ اِن کریں اور پھر کوشش کریں۔');
+      return false;
+    }
+
+    try {
+      const replyId = replyFields.replyToId;
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          sender_id: senderId,
+          receiver_id: contactId,
+          body: trimmedText,
+          reply_to_id:
+            replyId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(replyId)
+              ? replyId
+              : null,
+          reply_to_snippet: replyFields.replyToSnippet ?? null,
+          reply_to_sender_name: replyFields.replyToSenderName ?? null,
+        })
+        .select('id, sender_id, receiver_id, body, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at')
+        .single();
+
+      if (error) throw error;
+      if (!data) throw new Error('Database did not return the saved message.');
+
+      const mapped = mapDatabaseMessage(data as GupshupMessageRow, senderId);
+      appendMessage(mapped.chatId, mapped.message);
+      setReplyTarget(null);
+      return true;
+    } catch (error) {
+      const failedAt = Date.now();
+      appendMessage(chatId, {
+        id: `failed-${failedAt}`,
+        chatId,
+        senderId: 'me',
+        kind: 'text',
+        text: trimmedText,
+        timestamp: getCurrentTimeLabel(),
+        createdAtMs: failedAt,
+        status: 'failed',
+        ...replyFields,
+      });
+      setReplyTarget(null);
+      showToast(error instanceof Error ? `پیغام نہیں بھیجا گیا: ${error.message}` : 'پیغام نہیں بھیجا جا سکا۔ دوبارہ کوشش کریں۔');
+      return false;
+    }
   };
 
-  const handleRetryFailedMessage = (chatId: string, messageId: string) => {
-    setMessagesByChat((prev) => ({
-      ...prev,
-      [chatId]: (prev[chatId] ?? []).map((m) =>
-        m.id === messageId ? { ...m, status: 'delivered' } : m
-      ),
-    }));
-    showToast('Message delivered');
+  const handleRetryFailedMessage = async (chatId: string, messageId: string) => {
+    const failedMessage = (messagesByChat[chatId] ?? []).find((message) => message.id === messageId);
+    if (!failedMessage?.text) return;
+
+    const sent = await handleSendText(chatId, failedMessage.text);
+    if (sent) {
+      setMessagesByChat((prev) => ({
+        ...prev,
+        [chatId]: (prev[chatId] ?? []).filter((message) => message.id !== messageId),
+      }));
+      showToast('پیغام بھیج دیا گیا۔');
+    }
   };
 
   const handleSendPhoto = (payload: {
