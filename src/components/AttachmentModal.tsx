@@ -41,6 +41,7 @@ export const AttachmentModal: React.FC<AttachmentModalProps> = ({
   const [caption, setCaption] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [isSendingPhoto, setIsSendingPhoto] = useState(false);
 
   // Google Drive state
   const [driveConnected, setDriveConnected] = useState(getDriveConnectionState().connected);
@@ -171,7 +172,9 @@ export const AttachmentModal: React.FC<AttachmentModalProps> = ({
   };
 
   const handleConfirmSend = async () => {
+    if (isSendingPhoto) return;
     if (previewUrl) {
+      setIsSendingPhoto(true);
       setUploadProgress(10);
       setErrorMsg(null);
       try {
@@ -188,6 +191,8 @@ export const AttachmentModal: React.FC<AttachmentModalProps> = ({
       } catch (err) {
         setUploadProgress(null);
         setErrorMsg(err instanceof Error ? err.message : 'تصویر اپلوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔');
+      } finally {
+        setIsSendingPhoto(false);
       }
       return;
     }
@@ -532,12 +537,12 @@ export const AttachmentModal: React.FC<AttachmentModalProps> = ({
           </button>
           <button
             type="button"
-            disabled={!previewUrl && !selectedDriveDoc}
+            disabled={isSendingPhoto || (!previewUrl && !selectedDriveDoc)}
             onClick={handleConfirmSend}
             className="h-11 px-5 rounded-[14px] bg-primary-container hover:bg-primary disabled:opacity-40 text-on-primary text-sm font-semibold flex items-center gap-2 transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">send</span>
-            <span>{selectedDriveDoc ? 'Send Drive File' : 'Send Photo'}</span>
+            {isSendingPhoto ? <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> : <span className="material-symbols-outlined text-[18px]">send</span>}
+            <span>{isSendingPhoto ? 'Sending…' : selectedDriveDoc ? 'Send Drive File' : 'Send Photo'}</span>
           </button>
         </div>
       </div>
