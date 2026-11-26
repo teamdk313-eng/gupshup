@@ -997,6 +997,7 @@ export default function App() {
       throw new Error('Login required to send an image.');
     }
     let uploadedPath: string | null = null;
+    updatePresenceActivity(contactId, 'sending_photo');
     try {
       const response = await fetch(payload.photoUrl);
       const blob = await response.blob();
@@ -1032,6 +1033,8 @@ export default function App() {
       if (uploadedPath && supabase) await supabase.storage.from('chat-media').remove([uploadedPath]);
       showToast(error instanceof Error ? `تصویر نہیں بھیجی جا سکی: ${error.message}` : 'تصویر نہیں بھیجی جا سکی۔');
       throw error;
+    } finally {
+      updatePresenceActivity(null, null);
     }
   };
 
@@ -1105,6 +1108,8 @@ export default function App() {
     } catch (error) {
       if (uploadedPath && supabase) await supabase.storage.from('chat-media').remove([uploadedPath]);
       showToast(error instanceof Error ? `وائس میسج نہیں بھیجا جا سکا: ${error.message}` : 'وائس میسج نہیں بھیجا جا سکا۔');
+    } finally {
+      updatePresenceActivity(null, null);
     }
   };
 
@@ -1526,6 +1531,7 @@ export default function App() {
             onSendText={handleSendText}
             onRetryFailedMessage={handleRetryFailedMessage}
             onSendVoice={handleSendVoice}
+            onPresenceActivity={updatePresenceActivity}
             onOpenAttachmentModal={() => setAttachmentOpen(true)}
             onOpenImageViewer={(msg) => setViewerMessage(msg)}
             onRequestBackupToDrive={handleRequestBackupSingleChat}
