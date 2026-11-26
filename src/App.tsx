@@ -728,23 +728,31 @@ export default function App() {
   };
 
   const appendMessage = (chatId: string, msg: ChatMessage) => {
-    setMessagesByChat((prev) => ({
-      ...prev,
-      [chatId]: [...(prev[chatId] ?? []), msg],
-    }));
-    const maxOrder = chats.reduce((max, c) => Math.max(max, c.lastActivityOrder), 0);
-    setChats((prev) =>
-      prev.map((c) =>
-        c.id === chatId
-          ? {
-              ...c,
-              unreadCount: 0,
-              lastActivityLabel: msg.timestamp,
-              lastActivityOrder: maxOrder + 10,
-            }
-          : c
-      )
-    );
+    setMessagesByChat((prev) => {
+      const current = prev[chatId] ?? [];
+      if (current.some((item) => item.id === msg.id)) return prev;
+      return {
+        ...prev,
+        [chatId]: [...current, msg].sort((a, b) => a.createdAtMs - b.createdAtMs),
+      };
+    });
+
+    setChats((prev) => {
+      const existing = prev.find((thread) => thread.id === chatId);
+      const contactId = existing?.contactId ??
+        (chatId.startsWith('chat-') ? chatId.slice(5) : msg.senderId === 'me' ? '' : msg.senderId);
+      const maxOrder = prev.reduce((max, thread) => Math.max(max, thread.lastActivityOrder), 0);
+      const updated: ChatThread = {
+        id: chatId,
+        contactId,
+        unreadCount: existing?.unreadCount ?? 0,
+        pinned: existing?.pinned ?? false,
+        lastActivityLabel: msg.timestamp,
+        lastActivityOrder: Math.max(msg.createdAtMs, maxOrder + 1),
+      };
+      return [updated, ...prev.filter((thread) => thread.id !== chatId)]
+        .sort((a, b) => b.lastActivityOrder - a.lastActivityOrder);
+    });
   };
 
   const buildReplyFields = () => {
