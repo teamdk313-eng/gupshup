@@ -1334,7 +1334,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                     onClick={onOpenAttachmentModal}
                     className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-primary flex items-center justify-center shrink-0 transition-colors"
                   >
-                    <span className="material-symbols-outlined text-[22px]">add</span>
+                    <span className="material-symbols-outlined text-[22px]">add_photo_alternate</span>
                   </button>
 
                   <div className="flex-1 min-w-0 h-12 rounded-2xl bg-surface-container-low flex items-center px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 focus-within:ring-2 focus-within:ring-primary-container/25">
