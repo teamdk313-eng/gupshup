@@ -137,27 +137,45 @@ interface GupshupMessageRow {
   sender_id: string;
   receiver_id: string;
   body: string;
+  kind: 'text' | 'photo' | 'voice' | 'drive_file';
+  media_path: string | null;
+  media_mime_type: string | null;
+  media_name: string | null;
+  media_size: number | null;
+  duration_seconds: number | null;
+  waveform: number[] | null;
   reply_to_id: string | null;
   reply_to_snippet: string | null;
   reply_to_sender_name: string | null;
   created_at: string;
 }
 
-function mapDatabaseMessage(row: GupshupMessageRow, currentUserId: string): {
+async function mapDatabaseMessage(row: GupshupMessageRow, currentUserId: string): Promise<{
   chatId: string;
   contactId: string;
   message: ChatMessage;
-} {
+}> {
   const isOwnMessage = row.sender_id === currentUserId;
   const contactId = isOwnMessage ? row.receiver_id : row.sender_id;
   const createdAtMs = Date.parse(row.created_at) || Date.now();
   const chatId = `chat-${contactId}`;
+  let mediaUrl: string | undefined;
+  if (row.media_path && supabase) {
+    const { data, error } = await supabase.storage.from('chat-media').createSignedUrl(row.media_path, 3600);
+    if (!error) mediaUrl = data?.signedUrl;
+  }
   const message: ChatMessage = {
     id: row.id,
     chatId,
     senderId: isOwnMessage ? 'me' : row.sender_id,
-    kind: 'text',
-    text: row.body,
+    kind: row.kind ?? 'text',
+    text: row.kind === 'text' || row.kind === 'photo' ? (row.body || undefined) : undefined,
+    photoUrl: row.kind === 'photo' ? mediaUrl : undefined,
+    photoName: row.kind === 'photo' ? (row.media_name ?? undefined) : undefined,
+    photoSize: row.kind === 'photo' && row.media_size ? String(row.media_size) : undefined,
+    voiceAudioUrl: row.kind === 'voice' ? mediaUrl : undefined,
+    voiceDurationSec: row.kind === 'voice' ? (row.duration_seconds ?? undefined) : undefined,
+    voiceWaveform: row.kind === 'voice' ? (row.waveform ?? undefined) : undefined,
     replyToId: row.reply_to_id ?? undefined,
     replyToSnippet: row.reply_to_snippet ?? undefined,
     replyToSenderName: row.reply_to_sender_name ?? undefined,
@@ -527,11 +545,11 @@ export default function App() {
     }
 
     let active = true;
-    const columns = 'id, sender_id, receiver_id, body, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at';
+    const columns = 'id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at';
 
-    const applyRealtimeMessage = (row: GupshupMessageRow) => {
+    const applyRealtimeMessage = async (row: GupshupMessageRow) => {
       if (row.sender_id !== userId && row.receiver_id !== userId) return;
-      const mapped = mapDatabaseMessage(row, userId);
+      const mapped = await mapDatabaseMessage(row, userId);
 
       setMessagesByChat((prev) => {
         const current = prev[mapped.chatId] ?? [];
@@ -562,7 +580,7 @@ export default function App() {
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => applyRealtimeMessage(payload.new as GupshupMessageRow)
+        (payload) => { void applyRealtimeMessage(payload.new as GupshupMessageRow); }
       )
       .subscribe((status, error) => {
         if (!active) return;
@@ -600,8 +618,8 @@ export default function App() {
 
         const grouped: Record<string, ChatMessage[]> = {};
         const threads = new Map<string, ChatThread>();
-        for (const row of rows) {
-          const mapped = mapDatabaseMessage(row, userId);
+        const mappedRows = await Promise.all(rows.map((row) => mapDatabaseMessage(row, userId)));
+        for (const mapped of mappedRows) {
           grouped[mapped.chatId] ??= [];
           grouped[mapped.chatId].push(mapped.message);
           const existing = threads.get(mapped.chatId);
@@ -817,6 +835,7 @@ export default function App() {
           sender_id: senderId,
           receiver_id: contactId,
           body: trimmedText,
+          kind: 'text',
           reply_to_id:
             replyId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(replyId)
               ? replyId
@@ -824,13 +843,13 @@ export default function App() {
           reply_to_snippet: replyFields.replyToSnippet ?? null,
           reply_to_sender_name: replyFields.replyToSenderName ?? null,
         })
-        .select('id, sender_id, receiver_id, body, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at')
+        .select('id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at')
         .single();
 
       if (error) throw error;
       if (!data) throw new Error('Database did not return the saved message.');
 
-      const mapped = mapDatabaseMessage(data as GupshupMessageRow, senderId);
+      const mapped = await mapDatabaseMessage(data as GupshupMessageRow, senderId);
       appendMessage(mapped.chatId, mapped.message);
       setReplyTarget(null);
       return true;
@@ -867,32 +886,56 @@ export default function App() {
     }
   };
 
-  const handleSendPhoto = (payload: {
+  const handleSendPhoto = async (payload: {
     photoUrl: string;
     photoName: string;
     photoSize: string;
     photoDimensions?: string;
     caption: string;
-  }) => {
-    if (!activeChatId) return;
-    const now = Date.now();
-    const msg: ChatMessage = {
-      id: `m-photo-${now}`,
-      chatId: activeChatId,
-      senderId: 'me',
-      kind: 'photo',
-      photoUrl: payload.photoUrl,
-      photoName: payload.photoName,
-      photoSize: payload.photoSize,
-      photoDimensions: payload.photoDimensions,
-      text: payload.caption || undefined,
-      timestamp: getCurrentTimeLabel(),
-      createdAtMs: now,
-      status: 'delivered',
-      ...buildReplyFields(),
-    };
-    appendMessage(activeChatId, msg);
-    setReplyTarget(null);
+  }): Promise<void> => {
+    const senderId = supabaseSession?.user.id;
+    const contactId = chats.find((thread) => thread.id === activeChatId)?.contactId;
+    if (!senderId || !supabase || !activeChatId || !contactId) {
+      showToast('تصویر بھیجنے کے لیے دوبارہ لاگ اِن کریں۔');
+      throw new Error('Login required to send an image.');
+    }
+    let uploadedPath: string | null = null;
+    try {
+      const response = await fetch(payload.photoUrl);
+      const blob = await response.blob();
+      if (!blob.type.startsWith('image/')) throw new Error('منتخب فائل تصویر نہیں ہے۔');
+      if (blob.size > 20 * 1024 * 1024) throw new Error('تصویر 20 MB سے چھوٹی ہونی چاہیے۔');
+      const extension = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+      uploadedPath = `${senderId}/${contactId}/${crypto.randomUUID()}.${extension}`;
+      const { error: uploadError } = await supabase.storage.from('chat-media').upload(uploadedPath, blob, {
+        contentType: blob.type,
+        upsert: false,
+      });
+      if (uploadError) throw uploadError;
+      const replyFields = buildReplyFields();
+      const { data, error } = await supabase.from('messages').insert({
+        sender_id: senderId,
+        receiver_id: contactId,
+        body: payload.caption || '',
+        kind: 'photo',
+        media_path: uploadedPath,
+        media_mime_type: blob.type,
+        media_name: payload.photoName,
+        media_size: blob.size,
+        reply_to_id: replyFields.replyToId ?? null,
+        reply_to_snippet: replyFields.replyToSnippet ?? null,
+        reply_to_sender_name: replyFields.replyToSenderName ?? null,
+      }).select('id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at').single();
+      if (error) throw error;
+      const mapped = await mapDatabaseMessage(data as GupshupMessageRow, senderId);
+      appendMessage(mapped.chatId, mapped.message);
+      setReplyTarget(null);
+      showToast('تصویر بھیج دی گئی ہے۔');
+    } catch (error) {
+      if (uploadedPath && supabase) await supabase.storage.from('chat-media').remove([uploadedPath]);
+      showToast(error instanceof Error ? `تصویر نہیں بھیجی جا سکی: ${error.message}` : 'تصویر نہیں بھیجی جا سکی۔');
+      throw error;
+    }
   };
 
   const handleSendDriveFile = (payload: {
@@ -917,26 +960,55 @@ export default function App() {
     setReplyTarget(null);
   };
 
-  const handleSendVoice = (
+  const handleSendVoice = async (
     chatId: string,
     payload: { durationSec: number; waveform: number[]; audioUrl?: string }
-  ) => {
-    const now = Date.now();
-    const msg: ChatMessage = {
-      id: `m-voice-${now}`,
-      chatId,
-      senderId: 'me',
-      kind: 'voice',
-      voiceDurationSec: payload.durationSec,
-      voiceWaveform: payload.waveform,
-      voiceAudioUrl: payload.audioUrl,
-      timestamp: getCurrentTimeLabel(),
-      createdAtMs: now,
-      status: 'delivered',
-      ...buildReplyFields(),
-    };
-    appendMessage(chatId, msg);
-    setReplyTarget(null);
+  ): Promise<void> => {
+    const senderId = supabaseSession?.user.id;
+    const contactId = chats.find((thread) => thread.id === chatId)?.contactId ??
+      (chatId.startsWith('chat-') ? chatId.slice(5) : '');
+    if (!senderId || !supabase || !contactId || !payload.audioUrl) {
+      showToast('وائس ریکارڈنگ دستیاب نہیں۔ مائیکروفون کی اجازت دے کر دوبارہ ریکارڈ کریں۔');
+      return;
+    }
+    let uploadedPath: string | null = null;
+    try {
+      const response = await fetch(payload.audioUrl);
+      const blob = await response.blob();
+      if (!blob.type.startsWith('audio/') || !blob.size) throw new Error('آڈیو ریکارڈنگ خالی یا ناقابلِ استعمال ہے۔');
+      if (blob.size > 20 * 1024 * 1024) throw new Error('وائس میسج 20 MB سے بڑا ہے۔');
+      const extension = blob.type.includes('ogg') ? 'ogg' : blob.type.includes('mp4') ? 'm4a' : 'webm';
+      uploadedPath = `${senderId}/${contactId}/${crypto.randomUUID()}.${extension}`;
+      const { error: uploadError } = await supabase.storage.from('chat-media').upload(uploadedPath, blob, {
+        contentType: blob.type,
+        upsert: false,
+      });
+      if (uploadError) throw uploadError;
+      const replyFields = buildReplyFields();
+      const { data, error } = await supabase.from('messages').insert({
+        sender_id: senderId,
+        receiver_id: contactId,
+        body: '',
+        kind: 'voice',
+        media_path: uploadedPath,
+        media_mime_type: blob.type,
+        media_name: 'Voice message',
+        media_size: blob.size,
+        duration_seconds: payload.durationSec,
+        waveform: payload.waveform,
+        reply_to_id: replyFields.replyToId ?? null,
+        reply_to_snippet: replyFields.replyToSnippet ?? null,
+        reply_to_sender_name: replyFields.replyToSenderName ?? null,
+      }).select('id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at').single();
+      if (error) throw error;
+      const mapped = await mapDatabaseMessage(data as GupshupMessageRow, senderId);
+      appendMessage(mapped.chatId, mapped.message);
+      setReplyTarget(null);
+      showToast('وائس میسج بھیج دیا گیا ہے۔');
+    } catch (error) {
+      if (uploadedPath && supabase) await supabase.storage.from('chat-media').remove([uploadedPath]);
+      showToast(error instanceof Error ? `وائس میسج نہیں بھیجا جا سکا: ${error.message}` : 'وائس میسج نہیں بھیجا جا سکا۔');
+    }
   };
 
   const handleTogglePinChat = (chatId: string) => {
