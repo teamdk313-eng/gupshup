@@ -131,6 +131,7 @@ interface GupshupProfileRow {
   id: string;
   username: string;
   last_seen_at?: string | null;
+  avatar_url?: string | null;
 }
 
 interface GupshupMessageRow {
@@ -195,7 +196,7 @@ async function getOwnProfile(userId: string): Promise<GupshupProfileRow | null> 
   if (!supabase) throw new Error('Supabase is not configured.');
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, username')
+    .select('id, username, avatar_url')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw new Error(error.message || 'Unable to load your profile.');
@@ -225,11 +226,39 @@ async function saveOwnUsername(userId: string, rawUsername: string): Promise<Gup
   return data as GupshupProfileRow;
 }
 
+async function uploadAndSaveProfileAvatar(userId: string, dataUrl: string | undefined): Promise<string | undefined> {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  if (!dataUrl) {
+    const { error } = await supabase.from('profiles').update({ avatar_url: null, updated_at: new Date().toISOString() }).eq('id', userId);
+    if (error) throw new Error(error.message || 'Unable to remove profile photo.');
+    return undefined;
+  }
+  const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/);
+  if (!match) throw new Error('Choose a JPG, PNG, WEBP or GIF image.');
+  const mimeType = match[1];
+  const bytes = Uint8Array.from(atob(match[2]), (char) => char.charCodeAt(0));
+  if (bytes.byteLength > 5 * 1024 * 1024) throw new Error('Profile photo must be 5 MB or smaller.');
+  const extension = mimeType === 'image/jpeg' ? 'jpg' : mimeType.split('/')[1];
+  const path = `${userId}/avatar.${extension}`;
+  const { error: uploadError } = await supabase.storage.from('profile-avatars').upload(path, new Blob([bytes], { type: mimeType }), {
+    upsert: true, contentType: mimeType, cacheControl: '3600',
+  });
+  if (uploadError) throw new Error(uploadError.message || 'Unable to upload profile photo.');
+  const { error: profileError } = await supabase.from('profiles').update({ avatar_url: path, updated_at: new Date().toISOString() }).eq('id', userId);
+  if (profileError) throw new Error(profileError.message || 'Unable to save profile photo.');
+  return supabase.storage.from('profile-avatars').getPublicUrl(path).data.publicUrl;
+}
+
+function getProfileAvatarUrl(path?: string | null): string | undefined {
+  if (!path || !supabase) return undefined;
+  return supabase.storage.from('profile-avatars').getPublicUrl(path).data.publicUrl;
+}
+
 async function getDirectoryProfiles(currentUserId: string): Promise<GupshupProfileRow[]> {
   if (!supabase) throw new Error('Supabase is not configured.');
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, username, last_seen_at')
+    .select('id, username, last_seen_at, avatar_url')
     .neq('id', currentUserId)
     .order('username', { ascending: true });
   if (error) throw new Error(error.message || 'Unable to load the member directory.');
@@ -476,7 +505,7 @@ export default function App() {
         if (!active) return;
 
         if (ownProfile) {
-          setUser((prev) => ({ ...prev, username: ownProfile.username }));
+          setUser((prev) => ({ ...prev, username: ownProfile.username, avatarDataUrl: getProfileAvatarUrl(ownProfile.avatar_url) }));
           setScreen((prev) => {
             if (prev === 'welcome' || prev === 'onboarding') {
               if (initialUrlState.requested && isProtectedScreen(initialUrlState.requested)) {
@@ -501,6 +530,7 @@ export default function App() {
             initials: member.username.slice(0, 2).toUpperCase(),
             avatarBgClass: 'bg-primary-fixed',
             avatarTextClass: 'text-on-primary-fixed',
+            avatarUrl: getProfileAvatarUrl(member.avatar_url),
             bio: '',
             joinedLabel: 'Gupshup member',
             joinedAgo: '',
@@ -1560,9 +1590,12 @@ export default function App() {
             messagesByChat={messagesByChat}
             blocked={blocked}
             onNavigate={navigateTo}
-            onUpdateAvatar={(dataUrl) => {
-              setUser((prev) => ({ ...prev, avatarDataUrl: dataUrl }));
-              showToast('Profile photo updated');
+            onUpdateAvatar={async (dataUrl) => {
+              const userId = supabaseSession?.user.id;
+              if (!userId) throw new Error('Please sign in again.');
+              const avatarUrl = await uploadAndSaveProfileAvatar(userId, dataUrl);
+              setUser((prev) => ({ ...prev, avatarDataUrl: avatarUrl }));
+              showToast(dataUrl ? 'Profile photo updated' : 'Profile photo removed');
             }}
             onCopyHandle={() => {
               navigator.clipboard?.writeText(`@${user.username}`).catch(() => {});
@@ -1580,11 +1613,15 @@ export default function App() {
               if (!userId || !supabase) {
                 throw new Error('Your Google session is missing. Please sign in again.');
               }
+              let savedAvatarUrl = updates.avatarDataUrl;
+              if (updates.avatarDataUrl !== user.avatarDataUrl) {
+                savedAvatarUrl = await uploadAndSaveProfileAvatar(userId, updates.avatarDataUrl);
+              }
               if (updates.username) {
                 const savedProfile = await saveOwnUsername(userId, updates.username);
-                setUser((prev) => ({ ...prev, ...updates, username: savedProfile.username }));
+                setUser((prev) => ({ ...prev, ...updates, avatarDataUrl: savedAvatarUrl, username: savedProfile.username }));
               } else {
-                setUser((prev) => ({ ...prev, ...updates }));
+                setUser((prev) => ({ ...prev, ...updates, avatarDataUrl: savedAvatarUrl }));
               }
               setScreen('profile');
               showToast('Profile changes saved');
