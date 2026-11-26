@@ -251,7 +251,7 @@ async function uploadAndSaveProfileAvatar(userId: string, dataUrl: string | unde
     return undefined;
   }
 
-  const match = dataUrl.match(/^data:(image\\/(?:jpeg|png|webp|gif));base64,(.+)$/);
+  const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/);
   if (!match) throw new Error('Choose a JPG, PNG, WEBP or GIF image.');
   const mimeType = match[1];
   const bytes = Uint8Array.from(atob(match[2]), (char) => char.charCodeAt(0));
