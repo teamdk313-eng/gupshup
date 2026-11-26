@@ -518,6 +518,139 @@ export default function App() {
     };
   }, [supabaseSession?.user.id, initialUrlState.requested]);
 
+  useEffect(() => {
+    const userId = supabaseSession?.user.id;
+    if (!userId || !supabase) {
+      setChats([]);
+      setMessagesByChat({});
+      return;
+    }
+
+    let active = true;
+    const columns = 'id, sender_id, receiver_id, body, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at';
+
+    const applyRealtimeMessage = (row: GupshupMessageRow) => {
+      if (row.sender_id !== userId && row.receiver_id !== userId) return;
+      const mapped = mapDatabaseMessage(row, userId);
+
+      setMessagesByChat((prev) => {
+        const current = prev[mapped.chatId] ?? [];
+        if (current.some((message) => message.id === mapped.message.id)) return prev;
+        return {
+          ...prev,
+          [mapped.chatId]: [...current, mapped.message].sort((a, b) => a.createdAtMs - b.createdAtMs),
+        };
+      });
+
+      setChats((prev) => {
+        const existing = prev.find((thread) => thread.id === mapped.chatId);
+        const updated: ChatThread = {
+          id: mapped.chatId,
+          contactId: mapped.contactId,
+          unreadCount: existing?.unreadCount ?? 0,
+          pinned: existing?.pinned ?? false,
+          lastActivityLabel: mapped.message.timestamp,
+          lastActivityOrder: Math.max(mapped.message.createdAtMs, existing?.lastActivityOrder ?? 0),
+        };
+        return [updated, ...prev.filter((thread) => thread.id !== mapped.chatId)]
+          .sort((a, b) => b.lastActivityOrder - a.lastActivityOrder);
+      });
+    };
+
+    const channel = supabase
+      .channel(`direct-messages-${userId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        (payload) => applyRealtimeMessage(payload.new as GupshupMessageRow)
+      )
+      .subscribe((status, error) => {
+        if (!active) return;
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          showToast(error?.message || 'لائیو پیغام کی سروس سے رابطہ نہیں ہو سکا۔');
+        }
+      });
+
+    const loadMessages = async () => {
+      try {
+        const [sentResult, receivedResult] = await Promise.all([
+          supabase
+            .from('messages')
+            .select(columns)
+            .eq('sender_id', userId)
+            .order('created_at', { ascending: true }),
+          supabase
+            .from('messages')
+            .select(columns)
+            .eq('receiver_id', userId)
+            .order('created_at', { ascending: true }),
+        ]);
+
+        if (sentResult.error) throw sentResult.error;
+        if (receivedResult.error) throw receivedResult.error;
+        if (!active) return;
+
+        const rowsById = new Map<string, GupshupMessageRow>();
+        for (const row of [...(sentResult.data ?? []), ...(receivedResult.data ?? [])]) {
+          rowsById.set((row as GupshupMessageRow).id, row as GupshupMessageRow);
+        }
+        const rows = [...rowsById.values()].sort(
+          (a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)
+        );
+
+        const grouped: Record<string, ChatMessage[]> = {};
+        const threads = new Map<string, ChatThread>();
+        for (const row of rows) {
+          const mapped = mapDatabaseMessage(row, userId);
+          grouped[mapped.chatId] ??= [];
+          grouped[mapped.chatId].push(mapped.message);
+          const existing = threads.get(mapped.chatId);
+          threads.set(mapped.chatId, {
+            id: mapped.chatId,
+            contactId: mapped.contactId,
+            unreadCount: existing?.unreadCount ?? 0,
+            pinned: existing?.pinned ?? false,
+            lastActivityLabel: mapped.message.timestamp,
+            lastActivityOrder: mapped.message.createdAtMs,
+          });
+        }
+
+        setMessagesByChat((prev) => {
+          const merged: Record<string, ChatMessage[]> = {};
+          for (const key of new Set([...Object.keys(prev), ...Object.keys(grouped)])) {
+            const byId = new Map<string, ChatMessage>();
+            for (const message of [...(grouped[key] ?? []), ...(prev[key] ?? [])]) {
+              byId.set(message.id, message);
+            }
+            merged[key] = [...byId.values()].sort((a, b) => a.createdAtMs - b.createdAtMs);
+          }
+          return merged;
+        });
+
+        setChats((prev) => {
+          const merged = new Map<string, ChatThread>(threads);
+          for (const thread of prev) {
+            const loaded = merged.get(thread.id);
+            merged.set(thread.id, loaded
+              ? { ...loaded, pinned: thread.pinned, unreadCount: thread.unreadCount }
+              : thread);
+          }
+          return [...merged.values()].sort((a, b) => b.lastActivityOrder - a.lastActivityOrder);
+        });
+      } catch (error) {
+        if (!active) return;
+        showToast(error instanceof Error ? `پیغامات لوڈ نہیں ہو سکے: ${error.message}` : 'پیغامات لوڈ نہیں ہو سکے۔');
+      }
+    };
+
+    void loadMessages();
+
+    return () => {
+      active = false;
+      void supabase.removeChannel(channel);
+    };
+  }, [supabaseSession?.user.id, showToast]);
+
   /* --------------------------- Auth & Navigation --------------------------- */
   const handleGoogleSignIn = async () => {
     setAuthError(null);
