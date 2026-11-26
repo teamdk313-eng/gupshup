@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#4f46e5" />
+    <title>Gupshup — Offline</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, sans-serif;
+        background-color: #f8f9ff;
+        color: #0b1c30;
+      }
+      .card {
+        width: 100%;
+        max-width: 420px;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 32px 24px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(11, 28, 48, 0.08);
+        border: 1px solid rgba(199, 196, 216, 0.35);
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #4f46e5 0%, #3525cd 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      p {
+        margin: 0 0 24px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #464555;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 46px;
+        border: 0;
+        border-radius: 14px;
+        background: #4f46e5;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #3525cd;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="logo" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8A2.5 2.5 0 0 1 17.5 16H9.2l-4.2 3.6c-.5.4-1 .06-1-.58V5.5Z"
+            fill="#ffffff"
+          />
+          <circle cx="9" cy="9.5" r="1.15" fill="#4f46e5" />
+          <circle cx="12" cy="9.5" r="1.15" fill="#4f46e5" />
+          <circle cx="15" cy="9.5" r="1.15" fill="#006b5f" />
+        </svg>
+      </div>
+      <h1>You are offline</h1>
+      <p>
+        Gupshup needs an internet connection to load new pages, sign in with Google, or deliver live
+        messages. Reconnect and try again.
+      </p>
+      <button class="btn" type="button" onclick="window.location.reload()">Try Again</button>
+    </main>
+  </body>
+</html>

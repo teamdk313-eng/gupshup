@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { AppScreen, CurrentUserProfile } from '../types/gupshup';
 import { Avatar } from './Avatar';
+import { PWAInstallControl } from './PWAInstallUI';
 
 interface AppShellProps {
   currentScreen: AppScreen;
@@ -10,6 +11,7 @@ interface AppShellProps {
   onGlobalSearchChange: (q: string) => void;
   onGlobalSearchSubmit: () => void;
   onNavigate: (screen: AppScreen) => void;
+  onAppInstalled?: () => void;
   mobileTitle?: string;
   mobileBackTo?: AppScreen;
   hideMobileHeader?: boolean;
@@ -25,6 +27,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   onGlobalSearchChange,
   onGlobalSearchSubmit,
   onNavigate,
+  onAppInstalled,
   mobileTitle,
   mobileBackTo,
   hideMobileHeader = false,
@@ -119,6 +122,8 @@ export const AppShell: React.FC<AppShellProps> = ({
                 <span className="text-sm font-semibold">Profile</span>
               </div>
             </button>
+
+            <PWAInstallControl variant="sidebar" onInstallAccepted={onAppInstalled} />
           </nav>
         </div>
 
@@ -175,6 +180,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         </form>
 
         <div className="flex items-center gap-3 relative">
+          <PWAInstallControl variant="header" onInstallAccepted={onAppInstalled} />
           <button
             type="button"
             aria-label="Search directory"
@@ -271,6 +277,7 @@ export const AppShell: React.FC<AppShellProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
+              <PWAInstallControl variant="mobile-header" onInstallAccepted={onAppInstalled} />
               {currentScreen === 'discover' && (
                 <button
                   type="button"

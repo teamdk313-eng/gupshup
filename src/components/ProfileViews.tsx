@@ -16,6 +16,7 @@ import {
   validateUsername,
 } from '../utils/gupshupLogic';
 import { Avatar } from './Avatar';
+import { PWAInstallControl } from './PWAInstallUI';
 
 /* -------------------------------------------------------------------------- */
 /* 1. MY PROFILE VIEW                                                         */
@@ -501,6 +502,7 @@ interface SettingsViewProps {
   onDisconnectDrive: () => Promise<void>;
   onRequestBackupAllChatsToDrive: () => void;
   onRequestSignOut: () => void;
+  onAppInstalled?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -514,6 +516,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onDisconnectDrive,
   onRequestBackupAllChatsToDrive,
   onRequestSignOut,
+  onAppInstalled,
 }) => {
   const [driveBusy, setDriveBusy] = useState(false);
   const [driveError, setDriveError] = useState<string | null>(null);
@@ -614,6 +617,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Android & Mobile App Installation Card */}
+      <PWAInstallControl variant="settings" onInstallAccepted={onAppInstalled} />
 
       {/* Privacy Toggles */}
       <div className="bg-surface-container-lowest rounded-3xl divide-y divide-surface-container-low shadow-[0_1px_4px_rgba(11,28,48,0.04)] border border-outline-variant/15 overflow-hidden">
