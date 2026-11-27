@@ -52,7 +52,7 @@ export const AppShell: React.FC<AppShellProps> = ({
     currentScreen === 'delete-account';
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface">
+    <div className="min-h-[100dvh] bg-surface text-on-surface">
       {/* Desktop Left Sidebar (lg+) */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-full w-60 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex-col justify-between py-6 px-4">
         <div className="flex flex-col gap-6">
@@ -329,7 +329,7 @@ export const AppShell: React.FC<AppShellProps> = ({
       <div
         className={`lg:pl-60 ${hideMobileHeader ? 'pt-0' : 'pt-14'} lg:pt-16 ${
           hideMobileBottomNav ? 'pb-0' : 'pb-16'
-        } lg:pb-0 min-h-screen`}
+        } lg:pb-0 min-h-[100dvh]`}
       >
         <div key={currentScreen} className="gupshup-screen-enter">
           {children}
