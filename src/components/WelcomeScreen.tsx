@@ -37,7 +37,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   };
 
   return (
-    <main className="w-full min-h-screen bg-surface flex items-center justify-center p-4 md:p-6">
+    <main className="w-full min-h-screen bg-surface flex items-center justify-center p-4 md:p-6 gupshup-screen-enter">
       <div className="w-full max-w-[1440px] mx-auto lg:min-h-[820px] grid grid-cols-1 lg:grid-cols-12 rounded-2xl overflow-hidden shadow-xl bg-surface-container-lowest">
         {/* Left Hero Column (Desktop showcase + Mobile compact preview) */}
         <div className="lg:col-span-7 relative p-6 lg:p-8 flex flex-col justify-between overflow-hidden bg-gradient-to-br from-surface-container-low via-surface-variant/40 to-secondary-container/20">
