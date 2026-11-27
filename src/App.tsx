@@ -344,6 +344,7 @@ export default function App() {
 
   // Toast
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>(() => {
     if (typeof window === 'undefined' || !('Notification' in window)) return 'unsupported';
     return Notification.permission;
@@ -356,6 +357,12 @@ export default function App() {
   } | null>(null);
   const toastTimerRef = useRef<number | null>(null);
   const presenceChannelRef = useRef<ReturnType<NonNullable<typeof supabase>['channel']> | null>(null);
+
+  useEffect(() => {
+    const handleUpdateReady = () => setUpdateAvailable(true);
+    window.addEventListener('gupshup:pwa-update-ready', handleUpdateReady);
+    return () => window.removeEventListener('gupshup:pwa-update-ready', handleUpdateReady);
+  }, []);
 
   const showToast = useCallback(
     (message: string, actionLabel?: string, onAction?: () => void) => {
@@ -1782,6 +1789,26 @@ export default function App() {
               className="rounded-lg p-2 text-on-surface-variant hover:bg-surface-container"
             >
               <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {updateAvailable && (
+        <div role="status" aria-live="polite" className="fixed top-3 left-1/2 -translate-x-1/2 z-[120] w-[min(94vw,520px)] rounded-2xl border border-primary/30 bg-surface-container-lowest p-3 shadow-2xl gupshup-menu-in">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-primary text-2xl">system_update</span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-on-surface">نیا ورژن دستیاب ہے</p>
+              <p className="text-xs text-on-surface-variant">تازہ خصوصیات حاصل کرنے کے لیے ابھی اپ ڈیٹ کریں۔</p>
+            </div>
+            <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('gupshup:apply-pwa-update'))}
+              className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:opacity-90">
+              اپ ڈیٹ کریں
+            </button>
+            <button type="button" aria-label="بعد میں" onClick={() => setUpdateAvailable(false)}
+              className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container">
+              <span className="material-symbols-outlined text-lg">close</span>
             </button>
           </div>
         </div>
