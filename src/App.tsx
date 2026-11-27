@@ -297,14 +297,34 @@ function getProfileAvatarUrl(path?: string | null): string | undefined {
 
 async function getDirectoryProfiles(currentUserId: string): Promise<GupshupProfileRow[]> {
   if (!supabase) throw new Error('Supabase is not configured.');
-  const [{ data, error }, { data: badges, error: badgeError }] = await Promise.all([
-    supabase.from('profiles').select('id, username, last_seen_at, avatar_url').neq('id', currentUserId).order('username', { ascending: true }),
-    supabase.from('member_moderation').select('user_id, is_verified'),
-  ]);
+
+  // The public member directory must not disappear just because the optional
+  // moderation-badge lookup is unavailable to a particular session.
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, last_seen_at, avatar_url')
+    .neq('id', currentUserId)
+    .order('username', { ascending: true });
+
   if (error) throw new Error(error.message || 'Unable to load the member directory.');
-  if (badgeError) throw new Error(badgeError.message || 'Unable to load verification badges.');
-  const verifiedIds = new Set((badges ?? []).filter((row) => row.is_verified).map((row) => row.user_id));
-  return (data ?? []).map((row) => ({ ...row, verified: verifiedIds.has(row.id) })) as GupshupProfileRow[];
+
+  let verifiedIds = new Set<string>();
+  try {
+    const { data: badges, error: badgeError } = await supabase
+      .from('member_moderation')
+      .select('user_id, is_verified');
+    if (!badgeError) {
+      verifiedIds = new Set((badges ?? []).filter((row) => row.is_verified).map((row) => row.user_id));
+    } else {
+      console.warn('Member directory loaded without optional verification badges:', badgeError.message);
+    }
+  } catch (badgeError) {
+    console.warn('Member directory loaded without optional verification badges:', badgeError);
+  }
+
+  return (data ?? [])
+    .filter((row) => typeof row.username === 'string' && row.username.trim().length > 0)
+    .map((row) => ({ ...row, verified: verifiedIds.has(row.id) })) as GupshupProfileRow[];
 }
 
 export default function App() {
