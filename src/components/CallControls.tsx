@@ -16,8 +16,9 @@ export const CallControls: React.FC<{
   userId: string;
   contactId: string;
   contactName: string;
+  contactsById: Record<string, { name: string }>;
   disabled?: boolean;
-}> = ({ userId, contactId, contactName, disabled = false }) => {
+}> = ({ userId, contactId, contactName, contactsById, disabled = false }) => {
   const [call, setCall] = useState<CallRow | null>(null);
   const [incoming, setIncoming] = useState<CallRow | null>(null);
   const [callError, setCallError] = useState('');
@@ -36,6 +37,7 @@ export const CallControls: React.FC<{
   const processedCandidateIdsRef = useRef<Set<number>>(new Set());
 
   useEffect(() => { callRef.current = call; }, [call]);
+  const peerName = incoming ? (contactsById[incoming.caller_id]?.name ?? 'Gupshup صارف') : call ? (contactsById[call.caller_id === userId ? call.callee_id : call.caller_id]?.name ?? contactName) : contactName;
 
   const closeMedia = useCallback(() => {
     pcRef.current?.close();
@@ -281,7 +283,7 @@ export const CallControls: React.FC<{
               <span className="material-symbols-outlined text-3xl">{incoming.call_type === 'video' ? 'videocam' : 'call'}</span>
             </div>
             <h2 className="text-lg font-bold text-on-surface">آنے والی {incoming.call_type === 'video' ? 'ویڈیو' : 'آڈیو'} کال</h2>
-            <p className="mt-1 text-sm text-on-surface-variant">{contactName}</p>
+            <p className="mt-1 text-sm text-on-surface-variant">{peerName}</p>
             <div className="mt-6 flex gap-3">
               <button type="button" disabled={connecting} onClick={() => void rejectCall()} className="flex-1 rounded-xl bg-error px-4 py-3 text-white font-semibold">رد کریں</button>
               <button type="button" disabled={connecting} onClick={() => void acceptCall()} className="flex-1 rounded-xl bg-primary px-4 py-3 text-white font-semibold">{connecting ? 'جوڑ رہے ہیں…' : 'قبول کریں'}</button>
@@ -294,7 +296,7 @@ export const CallControls: React.FC<{
         <div className="fixed inset-0 z-[110] bg-slate-950 text-white flex flex-col">
           <div className="flex items-center justify-between px-5 py-4">
             <div>
-              <div className="font-semibold">{contactName}</div>
+              <div className="font-semibold">{peerName}</div>
               <div className="text-xs text-white/65">{connecting || call.status === 'ringing' ? 'کال ملائی جا رہی ہے…' : remoteReady ? 'کال جاری ہے' : 'دوسرے صارف کا انتظار ہے…'}</div>
             </div>
             <span className="text-xs rounded-full bg-white/10 px-3 py-1">{call.call_type === 'video' ? 'ویڈیو' : 'آڈیو'}</span>
