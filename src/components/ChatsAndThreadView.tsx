@@ -342,7 +342,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
     }
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(msg.text.trim());
-    utterance.lang = /[\\u0600-\\u06FF]/.test(msg.text) ? 'ur-PK' : 'en-US';
+    utterance.lang = /[\u0600-\u06FF]/.test(msg.text) ? 'ur-PK' : 'en-US';
     utterance.rate = 0.96;
     utterance.onend = () => setReadingMessageId(null);
     utterance.onerror = () => setReadingMessageId(null);
