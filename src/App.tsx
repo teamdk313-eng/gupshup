@@ -19,6 +19,7 @@ import {
 } from './components/ProfileViews';
 import { ReportUserModal } from './components/ReportUserModal';
 import { SearchPeopleView } from './components/SearchPeopleView';
+import { SuperAdminPanel } from './components/SuperAdminPanel';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { DEFAULT_USER_PROFILE } from './data/seedData';
 import { supabase } from './lib/supabase';
@@ -442,6 +443,7 @@ export default function App() {
       // A browser-local value is only imported once for existing users.
       setScreen((prevScreen) => {
         if (prevScreen === 'welcome' || prevScreen === 'onboarding') {
+          if ((session.user.email ?? '').toLowerCase() === 'uakashafanny@gmail.com') return 'admin';
           if (initialUrlState.requested && isProtectedScreen(initialUrlState.requested)) {
             return initialUrlState.requested;
           }
@@ -1534,6 +1536,10 @@ export default function App() {
     Boolean(supabaseSession),
     isDemoPreview
   );
+
+  if (effectiveScreen === 'admin') {
+    return <SuperAdminPanel email={supabaseSession?.user.email ?? ''} onSignOut={() => void signOutSupabase()} />;
+  }
 
   /* --------------------------- Pre-Auth Screens ---------------------------- */
   if (effectiveScreen === 'welcome') {
