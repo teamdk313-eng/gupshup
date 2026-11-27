@@ -879,6 +879,21 @@ export default function App() {
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => { void applyRealtimeMessage(payload.new as GupshupMessageRow); }
       )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'messages' },
+        (payload) => {
+          const deleted = payload.old as Partial<GupshupMessageRow>;
+          if (!deleted.id || !deleted.sender_id || !deleted.receiver_id) return;
+          if (deleted.sender_id !== userId && deleted.receiver_id !== userId) return;
+          const contactId = deleted.sender_id === userId ? deleted.receiver_id : deleted.sender_id;
+          const chatId = `chat-${contactId}`;
+          setMessagesByChat((prev) => ({
+            ...prev,
+            [chatId]: (prev[chatId] ?? []).filter((message) => message.id !== deleted.id),
+          }));
+        }
+      )
       .subscribe((status, error) => {
         if (!active) return;
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
