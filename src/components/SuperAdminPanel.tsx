@@ -16,10 +16,27 @@ type AuditRow = {
   target_user_id: string | null;
 };
 
+type DailyActivityRow = {
+  user_id: string;
+  username: string | null;
+  active_minutes: number;
+  messages_sent: number;
+  messages_received: number;
+  chat_partners: number;
+  activity_alert: boolean;
+};
+
+type DailyActivityReport = {
+  report_date: string;
+  timezone: string;
+  members: DailyActivityRow[];
+};
+
 export const SuperAdminPanel: React.FC<{ email: string; onSignOut: () => void }> = ({ email, onSignOut }) => {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [audit, setAudit] = useState<AuditRow[]>([]);
+  const [dailyReport, setDailyReport] = useState<DailyActivityReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -36,10 +53,11 @@ export const SuperAdminPanel: React.FC<{ email: string; onSignOut: () => void }>
       return;
     }
     setAuthorized(true);
-    const [memberResult, moderationResult, auditResult] = await Promise.all([
+    const [memberResult, moderationResult, auditResult, activityResult] = await Promise.all([
       supabase.from('profiles').select('id, username, created_at, last_seen_at').order('created_at', { ascending: false }),
       supabase.from('member_moderation').select('user_id, is_verified, banned_at'),
       supabase.from('admin_audit_log').select('id, action, created_at, target_user_id').order('created_at', { ascending: false }).limit(30),
+      supabase.rpc('get_latest_admin_daily_report'),
     ]);
     if (memberResult.error) setError(memberResult.error.message);
     else {
@@ -48,6 +66,8 @@ export const SuperAdminPanel: React.FC<{ email: string; onSignOut: () => void }>
     }
     if (moderationResult.error) setError(moderationResult.error.message);
     if (!auditResult.error) setAudit((auditResult.data ?? []) as AuditRow[]);
+    if (!activityResult.error && activityResult.data) setDailyReport(activityResult.data as DailyActivityReport);
+    else if (activityResult.error) setError(activityResult.error.message);
     setLoading(false);
   }, []);
 
@@ -94,6 +114,32 @@ export const SuperAdminPanel: React.FC<{ email: string; onSignOut: () => void }>
         {error && <div role="alert" className="rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[['Total members', counts.total], ['Blue ticks', counts.verified], ['Banned accounts', counts.banned]].map(([label, value]) => <div key={String(label)} className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-5"><p className="text-sm text-on-surface-variant">{label}</p><p className="mt-2 text-3xl font-bold">{value}</p></div>)}
+        </section>
+        <section className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-4 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold">Daily activity report</h2>
+              <p className="text-sm text-on-surface-variant">Date: {dailyReport?.report_date ?? 'Today'} · Pakistan time · Approximate active app time</p>
+            </div>
+            <span className="rounded-full bg-surface-container px-3 py-1 text-xs font-semibold">Private content hidden</span>
+          </div>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[760px] text-left text-sm">
+              <thead><tr className="border-b border-outline-variant text-on-surface-variant"><th className="p-3">Member</th><th className="p-3">Active minutes</th><th className="p-3">Sent</th><th className="p-3">Received</th><th className="p-3">Chat partners</th><th className="p-3">Safety signal</th></tr></thead>
+              <tbody>
+                {(dailyReport?.members ?? []).map((m) => <tr key={m.user_id} className="border-b border-outline-variant/60">
+                  <td className="p-3 font-semibold">@{m.username || 'member'}</td>
+                  <td className="p-3 tabular-nums">{m.active_minutes} min</td>
+                  <td className="p-3 tabular-nums">{m.messages_sent}</td>
+                  <td className="p-3 tabular-nums">{m.messages_received}</td>
+                  <td className="p-3 tabular-nums">{m.chat_partners}</td>
+                  <td className="p-3">{m.activity_alert ? <span className="font-semibold text-amber-700">High volume — review</span> : <span className="text-emerald-700">No flag</span>}</td>
+                </tr>)}
+                {!dailyReport?.members?.length && <tr><td colSpan={6} className="p-6 text-center text-on-surface-variant">No activity data yet. Active time starts recording when users open the updated app.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs text-on-surface-variant">High-volume is a simple threshold (over 200 sent or received messages), not an AI finding or proof of misconduct. No message text, photos, voice notes, or private chat history is shown.</p>
         </section>
         <section className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-4 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-xl font-bold">Member management</h2><p className="text-sm text-on-surface-variant">Profile and account status only — private message contents are not shown.</p></div><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search username or user ID" className="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm sm:w-72" /></div>
