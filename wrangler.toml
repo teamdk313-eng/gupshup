@@ -1,0 +1,12 @@
+name = "gupshup"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-27"
+
+[vars]
+SUPABASE_URL = "https://vwjhkwnyatjiljanngyh.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "sb_publishable_bq8cv3xAx1oNsllQ3mQ96g_CQu40qae"
+VITE_SUPABASE_URL = "https://vwjhkwnyatjiljanngyh.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_bq8cv3xAx1oNsllQ3mQ96g_CQu40qae"
+
+[ai]
+binding = "AI"
