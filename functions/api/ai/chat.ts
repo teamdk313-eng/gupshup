@@ -1,5 +1,5 @@
 interface Env {
-  AI: { run(model: string, input: { messages: Array<{ role: string; content: string }>; max_tokens?: number }): Promise<{ response?: string }> };
+  AI: { run(model: string, input: { messages: Array<{ role: string; content: string }>; max_tokens?: number }): Promise<{ response?: string; choices?: Array<{ message?: { content?: string } }> }> };
   SUPABASE_URL: string;
   SUPABASE_PUBLISHABLE_KEY: string;
 }
@@ -36,7 +36,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     });
     if (messages[messages.length - 1].role !== 'user') return json({ error: 'Your latest message must be from you.' }, 400);
 
-    const result = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+    const result = await env.AI.run('@cf/google/gemma-4-26b-a4b-it', {
       messages: [
         {
           role: 'system',
@@ -44,9 +44,13 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         },
         ...messages,
       ],
-      max_tokens: 700,
+      max_completion_tokens: 700,
+      chat_template_kwargs: { enable_thinking: false },
     });
-    const reply = typeof result?.response === 'string' ? result.response.trim() : '';
+    const candidate = typeof result?.response === 'string'
+      ? result.response
+      : result?.choices?.[0]?.message?.content;
+    const reply = typeof candidate === 'string' ? candidate.trim() : '';
     if (!reply) return json({ error: 'AI could not prepare a reply. Please try again.' }, 502);
     return json({ reply });
   } catch (error) {
