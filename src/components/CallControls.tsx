@@ -32,6 +32,7 @@ export const CallControls: React.FC<{
   const remoteStreamRef = useRef<MediaStream | null>(null);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const callRef = useRef<CallRow | null>(null);
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   const processedCandidateIdsRef = useRef<Set<number>>(new Set());
@@ -48,6 +49,7 @@ export const CallControls: React.FC<{
     remoteStreamRef.current = null;
     if (localVideoRef.current) localVideoRef.current.srcObject = null;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+    if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
     pendingCandidatesRef.current = [];
     processedCandidateIdsRef.current.clear();
     setLocalReady(false);
@@ -84,6 +86,10 @@ export const CallControls: React.FC<{
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = incomingStream;
         void remoteVideoRef.current.play().catch(() => {});
+      }
+      if (remoteAudioRef.current) {
+        remoteAudioRef.current.srcObject = incomingStream;
+        void remoteAudioRef.current.play().catch(() => {});
       }
     };
     pc.onicecandidate = (event) => {
@@ -320,10 +326,13 @@ export const CallControls: React.FC<{
                 <video ref={localVideoRef} autoPlay playsInline muted className="absolute right-6 top-6 w-28 sm:w-40 aspect-[3/4] object-cover rounded-xl border border-white/30 bg-slate-800" />
               </>
             ) : (
+              <>
+              <audio ref={remoteAudioRef} autoPlay playsInline />
               <div className="text-center">
                 <div className="mx-auto w-28 h-28 rounded-full bg-white/10 flex items-center justify-center"><span className="material-symbols-outlined text-5xl">person</span></div>
                 <p className="mt-4 text-white/70">{remoteReady ? 'آڈیو کال منسلک ہے' : 'کال کنیکٹ ہو رہی ہے…'}</p>
               </div>
+              </>
             )}
           </div>
           <div className="flex items-center justify-center gap-5 p-7">
