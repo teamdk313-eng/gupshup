@@ -159,9 +159,10 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenContactInfo(person.id)}
-                    className="text-base font-semibold text-on-surface hover:text-primary truncate text-left transition-colors"
+                    className="inline-flex items-center gap-1 text-base font-semibold text-on-surface hover:text-primary truncate text-left transition-colors"
                   >
                     @{person.username}
+                    {person.verified && <span className="material-symbols-outlined text-[17px] text-sky-600" aria-label="Verified">verified</span>}
                   </button>
                   <p className="text-xs text-on-surface-variant mt-1">Gupshup member ID</p>
                 </div>
