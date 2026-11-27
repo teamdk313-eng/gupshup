@@ -14,6 +14,7 @@ const PROTECTED_SCREENS = new Set<AppScreen>([
   'search-people',
   'chats',
   'chat',
+  'ai-chat',
   'contact-info',
   'profile',
   'edit-profile',
