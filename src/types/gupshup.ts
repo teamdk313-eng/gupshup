@@ -12,7 +12,8 @@ export type AppScreen =
   | 'settings'
   | 'blocked-users'
   | 'privacy-policy'
-  | 'delete-account';
+  | 'delete-account'
+  | 'admin';
 
 export type ChatFilterTab = 'all' | 'unread' | 'pinned';
 
