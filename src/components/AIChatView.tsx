@@ -17,41 +17,60 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
   const [error, setError] = useState<string | null>(null);
   const [searchWeb, setSearchWeb] = useState(true);
   const [searchNotice, setSearchNotice] = useState('');
+  const [voiceMode, setVoiceMode] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceNotice, setVoiceNotice] = useState('');
+  const recognitionRef = useRef<any>(null);
   const endRef = useRef<HTMLDivElement>(null);
+
+  const speak = (text: string) => {
+    if (!('speechSynthesis' in window)) { setVoiceNotice('اس براؤزر میں آواز سنانے کی سہولت دستیاب نہیں۔'); return; }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = language === 'urdu' ? 'ur-PK' : language === 'hindi' ? 'hi-IN' : language === 'roman_urdu' ? 'ur-PK' : (navigator.language || 'en-US');
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const submitText = async (rawText: string) => {
+    const text = rawText.trim();
+    if (!text || busy || !setupComplete) return;
+    const next = [...messages, { role: 'user' as const, content: text, id: crypto.randomUUID() }];
+    setMessages(next); setDraft(''); setBusy(true); setError(null);
+    try {
+      const response = await fetch('/api/ai/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` }, body: JSON.stringify({ messages: next.slice(-16).map(({ role, content }) => ({ role, content })), preferences: { persona, language, vibe }, searchWeb }) });
+      const data = await response.json().catch(() => ({})) as { reply?: string; error?: string; sources?: SearchSource[]; searchStatus?: string };
+      if (!response.ok || !data.reply) throw new Error(data.error || 'AI is unavailable right now.');
+      setMessages((current) => [...current, { role: 'assistant', content: data.reply!, id: crypto.randomUUID(), sources: data.sources || [] }]);
+      setSearchNotice(data.searchStatus === 'not_configured' ? 'Web Search کو فعال کرنے کے لیے سرور پر سرچ کی API key درکار ہے۔' : data.searchStatus === 'failed' ? 'اس بار ویب سرچ دستیاب نہیں تھی؛ جواب AI کی عمومی معلومات پر مبنی ہے۔' : '');
+      if (voiceMode) speak(data.reply);
+    } catch (err) { setError(err instanceof Error ? err.message : 'Could not send your message.'); }
+    finally { setBusy(false); }
+  };
+
+  const startVoiceInput = () => {
+    const Ctor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!Ctor) { setVoiceNotice('اس براؤزر میں Voice Input دستیاب نہیں۔ Chrome میں مائیک استعمال کریں۔'); return; }
+    if (listening) { recognitionRef.current?.stop(); setListening(false); return; }
+    const recognition = new Ctor();
+    recognition.lang = language === 'urdu' ? 'ur-PK' : language === 'hindi' ? 'hi-IN' : language === 'roman_urdu' ? 'ur-PK' : (navigator.language || 'ur-PK');
+    recognition.interimResults = true; recognition.continuous = false;
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i += 1) if (event.results[i].isFinal) transcript += event.results[i][0].transcript;
+      if (transcript.trim()) { setDraft(transcript.trim()); setListening(false); void submitText(transcript.trim()); }
+    };
+    recognition.onerror = () => { setListening(false); setVoiceNotice('مائیک دستیاب نہیں ہوا۔ مائیک کی اجازت چیک کریں۔'); };
+    recognition.onend = () => setListening(false);
+    recognitionRef.current = recognition; setVoiceNotice('بولنا شروع کریں؛ آپ کی بات سن کر AI کو بھیج دی جائے گی۔'); setListening(true); recognition.start();
+  };
+
+  useEffect(() => () => { recognitionRef.current?.stop(); if ('speechSynthesis' in window) window.speechSynthesis.cancel(); }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages, busy]);
 
-  const send = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const text = draft.trim();
-    if (!text || busy || !setupComplete) return;
-    const next = [...messages, { role: 'user' as const, content: text, id: crypto.randomUUID() }];
-    setMessages(next);
-    setDraft('');
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
-        body: JSON.stringify({
-          messages: next.slice(-16).map(({ role, content }) => ({ role, content })),
-          preferences: { persona, language, vibe },
-          searchWeb,
-        }),
-      });
-      const data = await response.json().catch(() => ({})) as { reply?: string; error?: string; sources?: SearchSource[]; searchStatus?: string };
-      if (!response.ok || !data.reply) throw new Error(data.error || 'AI is unavailable right now.');
-      setMessages((current) => [...current, { role: 'assistant', content: data.reply!, id: crypto.randomUUID(), sources: data.sources || [] }]);
-      setSearchNotice(data.searchStatus === 'not_configured' ? 'Web Search کو فعال کرنے کے لیے سرور پر سرچ کی API key درکار ہے۔' : data.searchStatus === 'failed' ? 'اس بار ویب سرچ دستیاب نہیں تھی؛ جواب AI کی عمومی معلومات پر مبنی ہے۔' : '');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not send your message.');
-    } finally {
-      setBusy(false);
-    }
-  };
+  const send = (event: React.FormEvent) => { event.preventDefault(); void submitText(draft); };
 
   const Choice = ({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) => (
     <button type="button" onClick={onClick} className={`rounded-xl border px-3 py-3 text-sm text-left transition-colors ${selected ? 'border-primary bg-primary-container/50 text-on-surface' : 'border-outline-variant/40 text-on-surface-variant hover:bg-surface-container'}`} aria-pressed={selected}>
@@ -126,8 +145,9 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
         <>
           <div className="mb-2 flex items-center justify-between gap-2 text-xs text-on-surface-variant">
             <span>{persona === 'girl_friendly' ? '🌸 دوستانہ انداز' : '🤝 اچھے دوست کا انداز'} · {vibe === 'fun' ? 'مزاحیہ' : vibe === 'calm' ? 'پرسکون' : 'سیکھنے والا'}</span>
-            <div className="flex items-center gap-3">
-              <button type="button" onClick={() => setSearchWeb((value) => !value)} className={"rounded-full border px-3 py-1.5 " + (searchWeb ? 'border-primary bg-primary-container/40 text-on-surface' : 'border-outline-variant/50')}>🌐 Web Search {searchWeb ? 'ON' : 'OFF'}</button>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => { setVoiceMode((v) => !v); setVoiceNotice(''); if (voiceMode && 'speechSynthesis' in window) window.speechSynthesis.cancel(); }} className={"rounded-full border px-3 py-1.5 " + (voiceMode ? 'border-primary bg-primary-container/40 text-on-surface' : 'border-outline-variant/50')}>🔊 Voice {voiceMode ? 'ON' : 'OFF'}</button>
+              <button type="button" onClick={() => setSearchWeb((value) => !value) className={"rounded-full border px-3 py-1.5 " + (searchWeb ? 'border-primary bg-primary-container/40 text-on-surface' : 'border-outline-variant/50')}>🌐 Web Search {searchWeb ? 'ON' : 'OFF'}</button>
               <button type="button" onClick={() => { setSetupComplete(false); setMessages([]); setError(null); }} className="underline">انداز تبدیل کریں</button>
             </div>
           </div>
@@ -149,8 +169,9 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
             {searchNotice && <p className="text-xs text-on-surface-variant" role="status">{searchNotice}</p>}
             {messages.map((message) => (
               <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className="max-w-[88%]">
+                <div className="max-w-[88%] animate-[gupshup-message-in_260ms_cubic-bezier(.2,.8,.2,1)_both]">
                   <div className={`whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-primary text-on-primary' : 'rounded-bl-md bg-surface-container text-on-surface'}`}>{message.content}</div>
+                  {message.role === 'assistant' && <button type="button" onClick={() => speak(message.content)} className="mt-1 px-2 py-1 text-xs text-primary hover:underline">🔈 جواب سنیں</button>}
                   {message.role === 'assistant' && !!message.sources?.length && <div className="mt-2 space-y-1 px-1"><p className="text-[11px] font-semibold text-on-surface-variant">Sources / ذرائع</p>{message.sources.map((source, index) => <a key={source.url + index} href={source.url} target="_blank" rel="noopener noreferrer" className="block truncate text-xs text-primary underline">[{index + 1}] {source.title}</a>)}</div>}
                 </div>
               </div>
@@ -160,7 +181,9 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
             <div ref={endRef} />
           </section>
 
+          {(voiceNotice || voiceMode) && <p className="px-1 text-xs text-on-surface-variant" role="status">{voiceNotice || 'Voice mode آن ہے: جواب آواز میں سنایا جائے گا۔'}</p>}
           <form onSubmit={send} className="mt-3 flex items-end gap-2 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-2">
+            <button type="button" onClick={startVoiceInput} aria-label={listening ? 'Stop voice input' : 'Speak to AI'} className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${listening ? 'bg-error text-white animate-pulse' : 'bg-surface-container text-primary'}`}><span className="material-symbols-outlined">{listening ? 'stop' : 'mic'}</span></button>
             <textarea value={draft} onChange={(event) => setDraft(event.target.value)} rows={1} maxLength={3000} placeholder="Message Gupshup AI…" className="max-h-32 min-h-11 flex-1 resize-y bg-transparent px-3 py-3 text-sm text-on-surface outline-none placeholder:text-on-surface-variant" />
             <button type="submit" disabled={!draft.trim() || busy} className="flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-on-primary disabled:cursor-not-allowed disabled:opacity-50">
               <span className="material-symbols-outlined text-lg">send</span><span>Send</span>
