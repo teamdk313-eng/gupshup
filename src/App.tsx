@@ -603,7 +603,9 @@ export default function App() {
           });
         } else {
           setUser((prev) => ({ ...prev, username: '' }));
-          setScreen('onboarding');
+          if ((supabaseSession?.user.email ?? '').toLowerCase() !== 'uakashafanny@gmail.com') {
+            setScreen('onboarding');
+          }
         }
 
         const refreshDirectory = async () => {
