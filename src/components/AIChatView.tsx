@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-type ChatLine = { role: 'user' | 'assistant'; content: string; id: string };
+type SearchSource = { title: string; url: string; snippet: string };
+type ChatLine = { role: 'user' | 'assistant'; content: string; id: string; sources?: SearchSource[] };
 type Persona = 'girl_friendly' | 'good_friend';
 type Language = 'auto' | 'urdu' | 'hindi' | 'roman_urdu';
 type Vibe = 'fun' | 'calm' | 'learning';
@@ -14,6 +15,8 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchWeb, setSearchWeb] = useState(true);
+  const [searchNotice, setSearchNotice] = useState('');
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,11 +39,13 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
         body: JSON.stringify({
           messages: next.slice(-16).map(({ role, content }) => ({ role, content })),
           preferences: { persona, language, vibe },
+          searchWeb,
         }),
       });
-      const data = await response.json().catch(() => ({})) as { reply?: string; error?: string };
+      const data = await response.json().catch(() => ({})) as { reply?: string; error?: string; sources?: SearchSource[]; searchStatus?: string };
       if (!response.ok || !data.reply) throw new Error(data.error || 'AI is unavailable right now.');
-      setMessages((current) => [...current, { role: 'assistant', content: data.reply!, id: crypto.randomUUID() }]);
+      setMessages((current) => [...current, { role: 'assistant', content: data.reply!, id: crypto.randomUUID(), sources: data.sources || [] }]);
+      setSearchNotice(data.searchStatus === 'not_configured' ? 'Web Search کو فعال کرنے کے لیے سرور پر سرچ کی API key درکار ہے۔' : data.searchStatus === 'failed' ? 'اس بار ویب سرچ دستیاب نہیں تھی؛ جواب AI کی عمومی معلومات پر مبنی ہے۔' : '');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not send your message.');
     } finally {
@@ -121,7 +126,10 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
         <>
           <div className="mb-2 flex items-center justify-between gap-2 text-xs text-on-surface-variant">
             <span>{persona === 'girl_friendly' ? '🌸 دوستانہ انداز' : '🤝 اچھے دوست کا انداز'} · {vibe === 'fun' ? 'مزاحیہ' : vibe === 'calm' ? 'پرسکون' : 'سیکھنے والا'}</span>
-            <button type="button" onClick={() => { setSetupComplete(false); setMessages([]); setError(null); }} className="underline">انداز تبدیل کریں</button>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => setSearchWeb((value) => !value)} className={"rounded-full border px-3 py-1.5 " + (searchWeb ? 'border-primary bg-primary-container/40 text-on-surface' : 'border-outline-variant/50')}>🌐 Web Search {searchWeb ? 'ON' : 'OFF'}</button>
+              <button type="button" onClick={() => { setSetupComplete(false); setMessages([]); setError(null); }} className="underline">انداز تبدیل کریں</button>
+            </div>
           </div>
           <section className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-3 sm:p-5" aria-live="polite">
             {messages.length === 0 && (
@@ -138,9 +146,13 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
                 </div>
               </div>
             )}
+            {searchNotice && <p className="text-xs text-on-surface-variant" role="status">{searchNotice}</p>}
             {messages.map((message) => (
               <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-primary text-on-primary' : 'rounded-bl-md bg-surface-container text-on-surface'}`}>{message.content}</div>
+                <div className="max-w-[88%]">
+                  <div className={`whitespace-pre-wrap break-words rounded-2xl px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-primary text-on-primary' : 'rounded-bl-md bg-surface-container text-on-surface'}`}>{message.content}</div>
+                  {message.role === 'assistant' && !!message.sources?.length && <div className="mt-2 space-y-1 px-1"><p className="text-[11px] font-semibold text-on-surface-variant">Sources / ذرائع</p>{message.sources.map((source, index) => <a key={source.url + index} href={source.url} target="_blank" rel="noopener noreferrer" className="block truncate text-xs text-primary underline">[{index + 1}] {source.title}</a>)}</div>}
+                </div>
               </div>
             ))}
             {busy && <div className="text-sm text-on-surface-variant">Gupshup AI is typing…</div>}
