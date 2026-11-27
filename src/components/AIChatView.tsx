@@ -147,7 +147,7 @@ export const AIChatView: React.FC<{ accessToken: string; userName: string }> = (
             <span>{persona === 'girl_friendly' ? '🌸 دوستانہ انداز' : '🤝 اچھے دوست کا انداز'} · {vibe === 'fun' ? 'مزاحیہ' : vibe === 'calm' ? 'پرسکون' : 'سیکھنے والا'}</span>
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => { setVoiceMode((v) => !v); setVoiceNotice(''); if (voiceMode && 'speechSynthesis' in window) window.speechSynthesis.cancel(); }} className={"rounded-full border px-3 py-1.5 " + (voiceMode ? 'border-primary bg-primary-container/40 text-on-surface' : 'border-outline-variant/50')}>🔊 Voice {voiceMode ? 'ON' : 'OFF'}</button>
-              <button type="button" onClick={() => setSearchWeb((value) => !value) className={"rounded-full border px-3 py-1.5 " + (searchWeb ? 'border-primary bg-primary-container/40 text-on-surface' : 'border-outline-variant/50')}>🌐 Web Search {searchWeb ? 'ON' : 'OFF'}</button>
+              <button type="button" onClick={() => setSearchWeb((value) => !value)} className={"rounded-full border px-3 py-1.5 " + (searchWeb ? 'border-primary bg-primary-container/40 text-on-surface' : 'border-outline-variant/50')}>🌐 Web Search {searchWeb ? 'ON' : 'OFF'}</button>
               <button type="button" onClick={() => { setSetupComplete(false); setMessages([]); setError(null); }} className="underline">انداز تبدیل کریں</button>
             </div>
           </div>
