@@ -1,5 +1,5 @@
 interface Env {
-  AI: { run(model: string, input: { messages: Array<{ role: string; content: string }>; max_completion_tokens?: number; chat_template_kwargs?: { enable_thinking?: boolean } }): Promise<{ response?: string; choices?: Array<{ message?: { content?: string } }> }> };
+  AI: { run(model: string, input: { messages: Array<{ role: string; content: string }>; max_tokens?: number; chat_template_kwargs?: { enable_thinking?: boolean } }): Promise<{ response?: string; choices?: Array<{ message?: { content?: string } }> }> };
   SUPABASE_URL: string;
   SUPABASE_PUBLISHABLE_KEY: string;
 }
@@ -44,7 +44,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         },
         ...messages,
       ],
-      max_completion_tokens: 700,
+      max_tokens: 700,
       chat_template_kwargs: { enable_thinking: false },
     });
     const candidate = typeof result?.response === 'string'
