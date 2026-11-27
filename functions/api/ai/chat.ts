@@ -1,5 +1,5 @@
 interface Env {
-  AI: { run(model: string, input: { messages: Array<{ role: string; content: string }>; max_tokens?: number }): Promise<{ response?: string; choices?: Array<{ message?: { content?: string } }> }> };
+  AI: { run(model: string, input: { messages: Array<{ role: string; content: string }>; max_completion_tokens?: number; chat_template_kwargs?: { enable_thinking?: boolean } }): Promise<{ response?: string; choices?: Array<{ message?: { content?: string } }> }> };
   SUPABASE_URL: string;
   SUPABASE_PUBLISHABLE_KEY: string;
 }
