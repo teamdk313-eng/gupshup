@@ -89,6 +89,8 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
   const [draft, setDraft] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showThreadMenu, setShowThreadMenu] = useState(false);
+  const [openMessageMenuId, setOpenMessageMenuId] = useState<string | null>(null);
+  const [readingMessageId, setReadingMessageId] = useState<string | null>(null);
   const [simulateNextFail, setSimulateNextFail] = useState(false);
 
   // Voice playback state
@@ -125,6 +127,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
     playerRef.current = new VoicePlaybackController();
     return () => {
       playerRef.current?.stop();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       if (recTimerRef.current !== null) window.clearInterval(recTimerRef.current);
     };
   }, []);
@@ -328,6 +331,23 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
         setPlayElapsedSec(0);
       },
     });
+  };
+
+  const handleReadMessage = (msg: ChatMessage) => {
+    if (!msg.text?.trim() || !('speechSynthesis' in window)) return;
+    if (readingMessageId === msg.id) {
+      window.speechSynthesis.cancel();
+      setReadingMessageId(null);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(msg.text.trim());
+    utterance.lang = /[\\u0600-\\u06FF]/.test(msg.text) ? 'ur-PK' : 'en-US';
+    utterance.rate = 0.96;
+    utterance.onend = () => setReadingMessageId(null);
+    utterance.onerror = () => setReadingMessageId(null);
+    setReadingMessageId(msg.id);
+    window.speechSynthesis.speak(utterance);
   };
 
   const handleCyclePlaybackRate = () => {
@@ -1158,38 +1178,50 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                         </div>
                       </div>
 
-                      {/* Quick Reply / Retry Row */}
-                      <div className="flex items-center gap-2 mt-0.5 px-1">
+                      {/* Quick actions */}
+                      <div className="relative flex items-center gap-2 mt-0.5 px-1">
                         {msg.status === 'failed' && (
-                          <button
-                            type="button"
-                            onClick={() => onRetryFailedMessage(activeThread.id, msg.id)}
-                            className="text-[11px] font-semibold text-error hover:underline flex items-center gap-1"
-                          >
+                          <button type="button" onClick={() => onRetryFailedMessage(activeThread.id, msg.id)}
+                            className="text-[11px] font-semibold text-error hover:underline flex items-center gap-1">
                             <span className="material-symbols-outlined text-[13px]">refresh</span>
                             <span>Not delivered • Tap to retry</span>
                           </button>
                         )}
                         {msg.status !== 'failed' && (
-                          <button
-                            type="button"
-                            onClick={() => onSetReplyTarget(msg)}
-                            className="text-[11px] font-medium text-on-surface-variant/0 group-hover:text-on-surface-variant hover:text-primary focus:text-primary transition-colors"
-                          >
+                          <button type="button" onClick={() => onSetReplyTarget(msg)}
+                            className="text-[11px] font-medium text-on-surface-variant/0 group-hover:text-on-surface-variant hover:text-primary focus:text-primary transition-colors">
                             Reply
                           </button>
                         )}
-                        {isMe && isPersistedMessage && msg.status !== 'failed' && (
-                          <button
-                            type="button"
-                            onClick={() => onRequestDeleteMessage(msg)}
-                            className="text-[11px] font-medium text-error/75 hover:text-error focus:text-error transition-colors"
-                          >
-                            Delete for everyone
+                        {!isMe && msg.kind === 'text' && msg.text?.trim() && (
+                          <button type="button" onClick={() => handleReadMessage(msg)}
+                            aria-label={readingMessageId === msg.id ? 'Stop reading message' : 'Read message aloud'}
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold transition-all ${readingMessageId === msg.id ? 'bg-primary-container text-on-primary shadow-md' : 'text-primary hover:bg-primary-fixed'}`}>
+                            <span className="material-symbols-outlined text-[15px]">{readingMessageId === msg.id ? 'stop_circle' : 'volume_up'}</span>
+                            <span>{readingMessageId === msg.id ? 'روکیں' : 'سنیں'}</span>
+                            {readingMessageId === msg.id && <span className="gupshup-speaking-bars"><i /><i /><i /></span>}
                           </button>
                         )}
-                      </div>
-                    </div>
+                        {isMe && isPersistedMessage && msg.status !== 'failed' && (
+                          <div className="relative">
+                            <button type="button" aria-label="Message options"
+                              aria-expanded={openMessageMenuId === msg.id}
+                              onClick={() => setOpenMessageMenuId((current) => current === msg.id ? null : msg.id)}
+                              className="w-7 h-7 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors">
+                              <span className="material-symbols-outlined text-[18px]">more_horiz</span>
+                            </button>
+                            {openMessageMenuId === msg.id && (
+                              <div className="absolute bottom-full right-0 mb-2 w-48 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-1.5 shadow-xl z-40 gupshup-menu-in">
+                                <button type="button" onClick={() => { setOpenMessageMenuId(null); onRequestDeleteMessage(msg); }}
+                                  className="w-full flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-semibold text-error hover:bg-error-container/50 transition-colors">
+                                  <span className="material-symbols-outlined text-[17px]">delete</span>
+                                  <span>سب کے لیے حذف کریں</span>
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div> </div>
                   );
                 })
               )}
