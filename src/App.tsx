@@ -384,6 +384,37 @@ export default function App() {
     setShowNotificationPrompt(permission === 'default');
   }, [supabaseSession?.user.id]);
 
+  // Count one activity minute only while the app is visible and recently used.
+  // The database stores minute buckets only; it never receives message content.
+  useEffect(() => {
+    const userId = supabaseSession?.user.id;
+    if (!userId || !supabase || isCurrentUserBanned || typeof document === 'undefined') return;
+
+    let lastInteractionAt = Date.now();
+    let sending = false;
+    const markInteraction = () => { lastInteractionAt = Date.now(); };
+    const recordMinute = async () => {
+      if (document.visibilityState !== 'visible' || Date.now() - lastInteractionAt > 90_000 || sending) return;
+      sending = true;
+      try {
+        await supabase.rpc('record_my_activity_minute');
+      } finally {
+        sending = false;
+      }
+    };
+    const interactionEvents: (keyof DocumentEventMap)[] = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+    interactionEvents.forEach((eventName) => document.addEventListener(eventName, markInteraction, { passive: true }));
+    void recordMinute();
+    const intervalId = window.setInterval(() => void recordMinute(), 60_000);
+    document.addEventListener('visibilitychange', recordMinute);
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', recordMinute);
+      interactionEvents.forEach((eventName) => document.removeEventListener(eventName, markInteraction));
+    };
+  }, [supabaseSession?.user.id, isCurrentUserBanned]);
+
   const handleEnableNotifications = async () => {
     if (typeof window === 'undefined' || !('Notification' in window)) {
       setNotificationPermission('unsupported');
