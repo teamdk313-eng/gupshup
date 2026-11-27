@@ -51,6 +51,24 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
   const hasPrev = currentIdx > 0;
   const hasNext = currentIdx >= 0 && currentIdx < threadPhotos.length - 1;
 
+  const handleSaveToPhone = async () => {
+    try {
+      const response = await fetch(message.photoUrl!);
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = message.photoName || 'gupshup-photo.jpg';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+    } catch {
+      window.open(message.photoUrl!, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 z-[75] bg-slate-950/95 text-white flex flex-col justify-between select-none"
@@ -84,14 +102,16 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
             <span className="material-symbols-outlined text-[17px]">cloud_upload</span>
             <span className="hidden sm:inline">Save to Drive</span>
           </button>
-          <a
-            href={message.photoUrl}
-            download={message.photoName || 'gupshup-photo.jpg'}
-            aria-label="Download photo"
-            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+          <button
+            type="button"
+            onClick={() => void handleSaveToPhone()}
+            aria-label="Save photo to phone"
+            title="Save photo to phone"
+            className="h-10 px-3 rounded-full bg-white/10 hover:bg-white/20 flex items-center gap-1.5 justify-center transition-colors"
           >
             <span className="material-symbols-outlined text-[20px]">download</span>
-          </a>
+            <span className="text-xs font-semibold">Save</span>
+          </button>
         </div>
       </div>
 
