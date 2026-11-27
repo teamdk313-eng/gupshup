@@ -1403,17 +1403,37 @@ export default function App() {
   };
 
   const handleRequestDeleteMessage = (msg: ChatMessage) => {
+    if (msg.senderId !== 'me' || !supabaseSession?.user.id || !supabase) return;
+    const messageId = msg.id;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(messageId)) {
+      showToast('یہ پیغام سرور پر موجود نہیں، اس لیے اسے سب کے لیے حذف نہیں کیا جا سکتا۔');
+      return;
+    }
     setConfirmState({
       open: true,
-      title: 'Delete this photo?',
-      description: 'This will remove the photo from your conversation stream.',
-      confirmLabel: 'Delete Photo',
+      title: 'Delete for everyone?',
+      description: 'This will permanently remove your message from both your chat and the recipient’s chat. This cannot be undone.',
+      confirmLabel: 'Delete for everyone',
       variant: 'danger',
       icon: 'delete',
-      action: () => {
+      action: async () => {
+        const { data, error } = await supabase
+          .from('messages')
+          .delete()
+          .eq('id', messageId)
+          .eq('sender_id', supabaseSession.user.id)
+          .select('id, media_path')
+          .maybeSingle();
+        if (error) throw new Error(error.message || 'Unable to delete this message.');
+        if (!data) throw new Error('Message was not found or you are not allowed to delete it.');
+
+        if (data.media_path) {
+          const { error: storageError } = await supabase.storage.from('chat-media').remove([data.media_path]);
+          if (storageError) console.warn('Deleted message but could not remove its media object:', storageError.message);
+        }
         setMessagesByChat((prev) => deleteMessageInRecord(prev, msg.chatId, msg.id));
         if (viewerMessage?.id === msg.id) setViewerMessage(null);
-        showToast('Photo removed from conversation');
+        showToast('Message deleted for everyone');
       },
     });
   };
@@ -1818,6 +1838,7 @@ export default function App() {
             onOpenReportUser={(id) => setReportTargetId(id)}
             onSendText={handleSendText}
             onRetryFailedMessage={handleRetryFailedMessage}
+            onRequestDeleteMessage={handleRequestDeleteMessage}
             onSendVoice={handleSendVoice}
             onPresenceActivity={updatePresenceActivity}
             onOpenAttachmentModal={() => setAttachmentOpen(true)}
