@@ -973,6 +973,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
               ) : (
                 activeMessages.map((msg, idx) => {
                   const isMe = msg.senderId === 'me';
+                  const isPersistedMessage = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(msg.id);
                   const prevSameSender =
                     idx > 0 && activeMessages[idx - 1].senderId === msg.senderId;
                   const isPlaying = playingMsgId === msg.id;
@@ -1178,10 +1179,10 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                             Reply
                           </button>
                         )}
-                        {isMe && msg.status !== 'failed' && (
+                        {isMe && isPersistedMessage && msg.status !== 'failed' && (
                           <button
                             type="button"
-                            onClick={() => onRequestDeleteMessage(msg)}
+                            onClick={() => onRequestDeleteMessage(msg)
                             className="text-[11px] font-medium text-error/75 hover:text-error focus:text-error transition-colors"
                           >
                             Delete for everyone
