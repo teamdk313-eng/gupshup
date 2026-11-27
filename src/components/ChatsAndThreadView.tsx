@@ -1182,7 +1182,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                         {isMe && isPersistedMessage && msg.status !== 'failed' && (
                           <button
                             type="button"
-                            onClick={() => onRequestDeleteMessage(msg)
+                            onClick={() => onRequestDeleteMessage(msg)}
                             className="text-[11px] font-medium text-error/75 hover:text-error focus:text-error transition-colors"
                           >
                             Delete for everyone
