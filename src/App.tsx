@@ -1648,7 +1648,7 @@ export default function App() {
         <div
           role="status"
           aria-live="polite"
-          className="fixed top-3 left-1/2 -translate-x-1/2 z-[96] w-[min(92vw,440px)] rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-2xl"
+          className={`fixed ${showNotificationPrompt ? "top-24" : "top-3"} left-1/2 -translate-x-1/2 z-[96] w-[min(92vw,440px)] rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-2xl`}
         >
           <div className="flex items-center gap-3">
             <button
