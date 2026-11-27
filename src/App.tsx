@@ -318,6 +318,7 @@ export default function App() {
     return cb.hasCallbackParams || window.location.pathname === '/auth/callback';
   });
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isCurrentUserBanned, setIsCurrentUserBanned] = useState(false);
 
   const [user, setUser] = useState<CurrentUserProfile>(() => ({ ...DEFAULT_USER_PROFILE }));
   const [contacts, setContacts] = useState<ContactUser[]>([]);
@@ -423,7 +424,10 @@ export default function App() {
       syncDriveTokenFromSession(session);
       refreshDriveState();
 
-      if (!session) return;
+      if (!session) {
+        setIsCurrentUserBanned(false);
+        return;
+      }
 
       setIsDemoPreview(false);
       setAuthError(null);
@@ -561,6 +565,14 @@ export default function App() {
       setAuthResolving(true);
       try {
         let ownProfile = await getOwnProfile(userId);
+        const { data: moderationStatus, error: moderationStatusError } = await supabase
+          .from('member_moderation')
+          .select('banned_at')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (moderationStatusError) throw new Error(moderationStatusError.message);
+        if (!active) return;
+        setIsCurrentUserBanned(Boolean(moderationStatus?.banned_at));
 
         // Import the old device-local username once, preserving existing handles
         // while moving their canonical copy into the shared Supabase database.
@@ -1545,6 +1557,25 @@ export default function App() {
 
   if (effectiveScreen === 'admin') {
     return <SuperAdminPanel email={supabaseSession?.user.email ?? ''} onSignOut={() => void signOutSupabase()} />;
+  }
+
+  if (isCurrentUserBanned && supabaseSession) {
+    return (
+      <main className="min-h-screen bg-surface flex items-center justify-center px-5 py-10">
+        <section className="w-full max-w-md rounded-3xl bg-surface-container-lowest border border-outline-variant/20 p-7 text-center shadow-xl">
+          <div className="mx-auto mb-4 h-14 w-14 rounded-2xl bg-error-container text-on-error-container flex items-center justify-center">
+            <span className="material-symbols-outlined text-3xl">block</span>
+          </div>
+          <h1 className="text-2xl font-bold text-on-surface">Your account is banned</h1>
+          <p className="mt-3 text-sm leading-6 text-on-surface-variant">You can’t send or receive messages while this restriction is active. If you think this is a mistake, contact the Gupshup team and request an appeal.</p>
+          <a href="https://wa.me/923007641905?text=Hello%2C%20I%20would%20like%20to%20appeal%20my%20Gupshup%20account%20ban." target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-white hover:opacity-90">
+            <span className="material-symbols-outlined">chat</span>
+            Appeal on WhatsApp
+          </a>
+          <button type="button" onClick={() => void signOutSupabase()} className="mt-3 w-full rounded-xl bg-surface-container-low px-5 py-3 text-sm font-semibold text-on-surface">Sign out</button>
+        </section>
+      </main>
+    );
   }
 
   /* --------------------------- Pre-Auth Screens ---------------------------- */
