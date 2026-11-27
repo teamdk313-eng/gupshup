@@ -38,6 +38,7 @@ interface ChatsAndThreadViewProps {
   onOpenReportUser: (contactId: string) => void;
   onSendText: (chatId: string, text: string, simulateFailure?: boolean) => void;
   onRetryFailedMessage: (chatId: string, messageId: string) => void;
+  onRequestDeleteMessage: (msg: ChatMessage) => void;
   onSendVoice: (
     chatId: string,
     payload: { durationSec: number; waveform: number[]; audioUrl?: string }
@@ -76,6 +77,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
   onOpenReportUser,
   onSendText,
   onRetryFailedMessage,
+  onRequestDeleteMessage,
   onSendVoice,
   onPresenceActivity,
   onOpenAttachmentModal,
@@ -1174,6 +1176,15 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                             className="text-[11px] font-medium text-on-surface-variant/0 group-hover:text-on-surface-variant hover:text-primary focus:text-primary transition-colors"
                           >
                             Reply
+                          </button>
+                        )}
+                        {isMe && msg.status !== 'failed' && (
+                          <button
+                            type="button"
+                            onClick={() => onRequestDeleteMessage(msg)}
+                            className="text-[11px] font-medium text-error/75 hover:text-error focus:text-error transition-colors"
+                          >
+                            Delete for everyone
                           </button>
                         )}
                       </div>
