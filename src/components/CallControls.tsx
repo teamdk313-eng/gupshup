@@ -165,6 +165,17 @@ export const CallControls: React.FC<{
         }
       })
       .subscribe();
+    void supabase.from('call_ice_candidates').select('id, sender_id, candidate').eq('call_id', call.id)
+      .then(({ data }) => {
+        if (!data) return;
+        for (const row of data as { id: number; sender_id: string; candidate: RTCIceCandidateInit }[]) {
+          if (row.sender_id === userId || processedCandidateIdsRef.current.has(row.id)) continue;
+          processedCandidateIdsRef.current.add(row.id);
+          const pc = pcRef.current;
+          if (!pc?.remoteDescription) pendingCandidatesRef.current.push(row.candidate);
+          else void pc.addIceCandidate(row.candidate).catch(() => {});
+        }
+      });
     return () => {
       void supabase?.removeChannel(callChannel);
       void supabase?.removeChannel(iceChannel);
