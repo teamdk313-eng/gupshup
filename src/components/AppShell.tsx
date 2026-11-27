@@ -126,7 +126,7 @@ export const AppShell: React.FC<AppShellProps> = ({
 
             <button
               type="button"
-              onClick={() => onNavigate('profile')
+              onClick={() => onNavigate('profile')}
               className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-colors ${
                 isProfileActive
                   ? 'bg-primary-container text-on-primary'
