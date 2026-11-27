@@ -24,7 +24,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
   const blockedIds = new Set(blocked.map((b) => b.userId));
   const activePeople = contacts.filter((c) => !blockedIds.has(c.id));
 
-  const filtered = filterPeopleDirectory(activePeople, query);
+  const filtered = query.trim() ? filterPeopleDirectory(activePeople, query) : [];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -106,10 +106,10 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
             <span className="material-symbols-outlined text-[28px]">person_off</span>
           </div>
           <h3 className="text-lg font-semibold text-on-surface">
-            {query.trim() ? `No member ID found for “${query.trim()}”` : 'No other members have joined yet.'}
+            {query.trim() ? `No member ID found for “${query.trim()}”` : 'Search by username to find a member.'}
           </h3>
           <p className="text-sm text-on-surface-variant mt-1.5">
-            Search by @username. New members will appear here after they create an account.
+            Members are not listed publicly. Enter an exact or partial @username to find someone.
           </p>
           <div className="flex items-center justify-center gap-2.5 mt-5">
             <button
@@ -119,7 +119,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
               }}
               className="h-10 px-4 rounded-xl bg-primary-container text-on-primary text-sm font-semibold"
             >
-              Show Everyone
+              Clear Search
             </button>
             <button
               type="button"
