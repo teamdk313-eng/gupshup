@@ -16,10 +16,12 @@ import {
   getLastMessagePreview,
 } from '../utils/gupshupLogic';
 import { Avatar } from './Avatar';
+import { CallControls } from './CallControls';
 
 interface ChatsAndThreadViewProps {
   mode: 'chats' | 'chat';
   user: CurrentUserProfile;
+  currentUserId: string;
   chats: ChatThread[];
   contacts: ContactUser[];
   contactsById: Record<string, ContactUser>;
@@ -59,6 +61,7 @@ type RecordingState = 'idle' | 'recording' | 'paused' | 'preview';
 export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
   mode,
   user,
+  currentUserId,
   chats,
   contacts,
   contactsById,
@@ -754,6 +757,15 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
               </div>
 
               <div className="flex items-center gap-1.5 relative">
+                {currentUserId && activeContact && (
+                  <CallControls
+                    userId={currentUserId}
+                    contactId={activeContact.id}
+                    contactName={activeContact.name}
+                    contactsById={contactsById}
+                    disabled={isContactBlocked}
+                  />
+                )}
                 <button
                   type="button"
                   onClick={() => setShowInsights((s) => !s)}
