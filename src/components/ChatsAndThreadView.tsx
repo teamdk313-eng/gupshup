@@ -993,7 +993,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                   return (
                     <div
                       key={msg.id}
-                      className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
+                      className={`flex flex-col gupshup-message-in ${isMe ? 'items-end' : 'items-start'}`}
                     >
                       <div
                         className={`max-w-[calc(100%-0.5rem)] sm:max-w-[70%] min-w-0 group relative ${
