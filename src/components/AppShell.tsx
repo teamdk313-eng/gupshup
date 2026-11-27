@@ -42,6 +42,7 @@ export const AppShell: React.FC<AppShellProps> = ({
     currentScreen === 'chats' ||
     currentScreen === 'chat' ||
     currentScreen === 'contact-info';
+  const isAIActive = currentScreen === 'ai-chat';
   const isProfileActive =
     currentScreen === 'profile' ||
     currentScreen === 'edit-profile' ||
@@ -110,7 +111,22 @@ export const AppShell: React.FC<AppShellProps> = ({
 
             <button
               type="button"
-              onClick={() => onNavigate('profile')}
+              onClick={() => onNavigate('ai-chat')}
+              className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-colors ${
+                isAIActive
+                  ? 'bg-primary-container text-on-primary'
+                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
+                <span className="text-sm font-semibold">Gupshup AI</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigate('profile')
               className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-colors ${
                 isProfileActive
                   ? 'bg-primary-container text-on-primary'
@@ -324,7 +340,7 @@ export const AppShell: React.FC<AppShellProps> = ({
           aria-label="Mobile Navigation"
           className="lg:hidden fixed bottom-0 left-0 right-0 z-40 pb-safe bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_-1px_12px_rgba(0,0,0,0.06)] border-t border-outline-variant/20"
         >
-          <div className="grid grid-cols-3 items-center h-16 px-4">
+          <div className="grid grid-cols-4 items-center h-16 px-2">
             <button
               type="button"
               onClick={() => onNavigate('discover')}
@@ -364,6 +380,15 @@ export const AppShell: React.FC<AppShellProps> = ({
                 )}
               </div>
               <span className="text-[11px] font-medium">Chats</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigate('ai-chat')}
+              className={`flex flex-col items-center justify-center h-12 gap-0.5 transition-colors ${isAIActive ? 'text-primary' : 'text-on-surface-variant'}`}
+            >
+              <span className={`material-symbols-outlined text-[22px] ${isAIActive ? 'icon-filled' : ''}`}>auto_awesome</span>
+              <span className="text-[11px] font-medium">AI</span>
             </button>
 
             <button
