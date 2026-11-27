@@ -62,11 +62,11 @@ export const SuperAdminPanel: React.FC<{ email: string; onSignOut: () => void }>
     banned: members.filter((m) => Boolean(m.member_moderation?.[0]?.banned_at)).length,
   }), [members]);
 
-  const updateMember = async (member: MemberRow) => {
+  const updateMember = async (member: MemberRow, flag: 'verified' | 'banned') => {
     if (!supabase) return;
     const current = member.member_moderation?.[0];
-    const nextVerified = !current?.is_verified;
-    const nextBanned = !current?.banned_at;
+    const nextVerified = flag === 'verified' ? !current?.is_verified : Boolean(current?.is_verified);
+    const nextBanned = flag === 'banned' ? !current?.banned_at : Boolean(current?.banned_at);
     setBusyId(member.id);
     setError('');
     const { error: updateError } = await supabase.rpc('admin_set_member_status', {
@@ -96,7 +96,7 @@ export const SuperAdminPanel: React.FC<{ email: string; onSignOut: () => void }>
         <section className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-4 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-xl font-bold">Member management</h2><p className="text-sm text-on-surface-variant">Profile and account status only — private message contents are not shown.</p></div><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search username or user ID" className="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm sm:w-72" /></div>
           <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[650px] text-left text-sm"><thead><tr className="border-b border-outline-variant text-on-surface-variant"><th className="p-3">Member</th><th className="p-3">Joined</th><th className="p-3">Last seen</th><th className="p-3">Status</th><th className="p-3">Actions</th></tr></thead><tbody>
-            {filtered.map((m) => { const state = m.member_moderation?.[0]; return <tr key={m.id} className="border-b border-outline-variant/60"><td className="p-3"><div className="font-semibold">@{m.username || 'member'}</div><div className="max-w-52 truncate text-xs text-on-surface-variant">{m.id}</div></td><td className="p-3">{new Date(m.created_at).toLocaleDateString()}</td><td className="p-3">{m.last_seen_at ? new Date(m.last_seen_at).toLocaleString() : '—'}</td><td className="p-3"><div>{state?.is_verified ? '✓ Verified' : 'Not verified'}</div><div className={state?.banned_at ? 'text-red-600' : 'text-emerald-700'}>{state?.banned_at ? 'Banned' : 'Active'}</div></td><td className="p-3"><button disabled={busyId === m.id} onClick={() => void updateMember(m)} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white disabled:opacity-50">{busyId === m.id ? 'Saving…' : 'Toggle Blue Tick / Ban'}</button></td></tr>; })}
+            {filtered.map((m) => { const state = m.member_moderation?.[0]; return <tr key={m.id} className="border-b border-outline-variant/60"><td className="p-3"><div className="font-semibold">@{m.username || 'member'}</div><div className="max-w-52 truncate text-xs text-on-surface-variant">{m.id}</div></td><td className="p-3">{new Date(m.created_at).toLocaleDateString()}</td><td className="p-3">{m.last_seen_at ? new Date(m.last_seen_at).toLocaleString() : '—'}</td><td className="p-3"><div>{state?.is_verified ? '✓ Verified' : 'Not verified'}</div><div className={state?.banned_at ? 'text-red-600' : 'text-emerald-700'}>{state?.banned_at ? 'Banned' : 'Active'}</div></td><td className="p-3"><div className="flex gap-2"><button disabled={busyId === m.id} onClick={() => void updateMember(m, 'verified')} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white disabled:opacity-50">{state?.is_verified ? 'Remove Tick' : 'Blue Tick'}</button><button disabled={busyId === m.id} onClick={() => void updateMember(m, 'banned')} className="rounded-lg border border-red-300 px-3 py-2 text-xs font-bold text-red-700 disabled:opacity-50">{state?.banned_at ? 'Unban' : 'Ban'}</button></div></td></tr>; })}
             {!filtered.length && <tr><td colSpan={5} className="p-6 text-center text-on-surface-variant">No members found.</td></tr>}
           </tbody></table></div>
         </section>
