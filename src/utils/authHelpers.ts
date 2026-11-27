@@ -21,6 +21,7 @@ const PROTECTED_SCREENS = new Set<AppScreen>([
   'settings',
   'blocked-users',
   'delete-account',
+  'admin',
 ]);
 
 export function isProtectedScreen(screen: AppScreen): boolean {
