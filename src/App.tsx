@@ -91,6 +91,7 @@ const VALID_APP_SCREENS: AppScreen[] = [
   'blocked-users',
   'privacy-policy',
   'delete-account',
+  'admin',
 ];
 
 function parseRequestedScreenFromUrl(): {
@@ -135,6 +136,7 @@ interface GupshupProfileRow {
   username: string;
   last_seen_at?: string | null;
   avatar_url?: string | null;
+  verified?: boolean;
 }
 
 interface GupshupMessageRow {
@@ -294,13 +296,14 @@ function getProfileAvatarUrl(path?: string | null): string | undefined {
 
 async function getDirectoryProfiles(currentUserId: string): Promise<GupshupProfileRow[]> {
   if (!supabase) throw new Error('Supabase is not configured.');
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id, username, last_seen_at, avatar_url')
-    .neq('id', currentUserId)
-    .order('username', { ascending: true });
+  const [{ data, error }, { data: badges, error: badgeError }] = await Promise.all([
+    supabase.from('profiles').select('id, username, last_seen_at, avatar_url').neq('id', currentUserId).order('username', { ascending: true }),
+    supabase.from('member_moderation').select('user_id, is_verified'),
+  ]);
   if (error) throw new Error(error.message || 'Unable to load the member directory.');
-  return (data ?? []) as GupshupProfileRow[];
+  if (badgeError) throw new Error(badgeError.message || 'Unable to load verification badges.');
+  const verifiedIds = new Set((badges ?? []).filter((row) => row.is_verified).map((row) => row.user_id));
+  return (data ?? []).map((row) => ({ ...row, verified: verifiedIds.has(row.id) })) as GupshupProfileRow[];
 }
 
 export default function App() {
@@ -625,6 +628,7 @@ export default function App() {
             localTime: '',
             isOnline: false,
             lastSeenAt: member.last_seen_at ?? null,
+            verified: member.verified ?? false,
           })));
         };
 
