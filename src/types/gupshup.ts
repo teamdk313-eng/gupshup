@@ -5,6 +5,7 @@ export type AppScreen =
   | 'search-people'
   | 'chats'
   | 'chat'
+  | 'ai-chat'
   | 'contact-info'
   | 'profile'
   | 'edit-profile'
