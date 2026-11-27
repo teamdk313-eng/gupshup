@@ -1,3 +1,9 @@
+interface ChatPreferences {
+  persona?: 'girl_friendly' | 'good_friend';
+  language?: 'auto' | 'urdu' | 'hindi' | 'roman_urdu';
+  vibe?: 'fun' | 'calm' | 'learning';
+}
+
 interface Env {
   AI: { run(model: string, input: { messages: Array<{ role: string; content: string }>; max_tokens?: number; chat_template_kwargs?: { enable_thinking?: boolean } }): Promise<{ response?: string; choices?: Array<{ message?: { content?: string } }> }> };
   SUPABASE_URL: string;
@@ -6,6 +12,7 @@ interface Env {
 
 interface ChatRequest {
   messages?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  preferences?: ChatPreferences;
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }): Promise<Response> {
@@ -36,11 +43,35 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     });
     if (messages[messages.length - 1].role !== 'user') return json({ error: 'Your latest message must be from you.' }, 400);
 
+    const preferences = body.preferences || {};
+    const persona = preferences.persona === 'girl_friendly' ? 'girl_friendly' : 'good_friend';
+    const language = ['auto', 'urdu', 'hindi', 'roman_urdu'].includes(preferences.language || '')
+      ? preferences.language!
+      : 'auto';
+    const vibe = ['fun', 'calm', 'learning'].includes(preferences.vibe || '')
+      ? preferences.vibe!
+      : 'calm';
+
+    const languageInstruction = {
+      auto: 'Match the language used by the user',
+      urdu: 'Always reply in Urdu',
+      hindi: 'Always reply in Hindi',
+      roman_urdu: 'Always reply in Roman Urdu',
+    }[language];
+    const vibeInstruction = {
+      fun: 'Keep the conversation light, cheerful, and humorous when appropriate',
+      calm: 'Use a calm, kind, and reassuring tone',
+      learning: 'Be curious, explain things clearly, and encourage learning',
+    }[vibe];
+    const personaInstruction = persona === 'girl_friendly'
+      ? 'Use a friendly, cheerful, gentle feminine conversational style, like a platonic female friend. You are still clearly an AI, not a real girl. Never act as a girlfriend or romantic partner.'
+      : 'Use the relaxed, honest, supportive tone of a good platonic friend. You are an AI assistant, not a real-life friend.';
+
     const result = await env.AI.run('@cf/google/gemma-4-26b-a4b-it', {
       messages: [
         {
           role: 'system',
-          content: `You are Gupshup AI, a helpful assistant inside a messaging app. Keep all responses age-appropriate for teenagers. Never engage in romantic or girlfriend/boyfriend roleplay, sexual content, or dangerous activities. Be warm, friendly, playful when appropriate, and supportive without pretending to be a real person or creating emotional dependency. Never request passwords, authentication codes, or private account details. If uncertain, say so.\nPersona: ${body.preferences?.persona === 'girl_friendly' ? 'Use a friendly, cheerful, gentle feminine conversational style, but remain clearly a platonic AI friend; do not claim to be a real girl.' : 'Use the relaxed, honest, supportive tone of a good platonic friend.'}\nLanguage: ${({ auto: 'Match the user language', urdu: 'Always reply in Urdu', hindi: 'Always reply in Hindi', roman_urdu: 'Always reply in Roman Urdu' } as const)[body.preferences?.language || 'auto']}.\nConversation mood: ${({ fun: 'Light and humorous', calm: 'Calm and reassuring', learning: 'Curious and educational' } as const)[body.preferences?.vibe || 'calm']}. Reply naturally and conversationally.`,
+          content: `You are Gupshup AI, a helpful assistant inside a messaging app. Keep all responses age-appropriate for teenagers. Never engage in romantic or girlfriend/boyfriend roleplay, sexual content, or dangerous activities. Be warm, friendly, playful when appropriate, and supportive without pretending to be a real person or creating emotional dependency. Never request passwords, authentication codes, or private account details. If uncertain, say so.\nPersona: ${personaInstruction}\nLanguage: ${languageInstruction}.\nConversation mood: ${vibeInstruction}. Reply naturally and conversationally.`,
         },
         ...messages,
       ],
