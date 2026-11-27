@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { AppScreen, CurrentUserProfile } from '../types/gupshup';
 import { Avatar } from './Avatar';
 import { PWAInstallControl } from './PWAInstallUI';
@@ -35,6 +35,12 @@ export const AppShell: React.FC<AppShellProps> = ({
   children,
 }) => {
   const [showNotifs, setShowNotifs] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const introTimer = window.setTimeout(() => setShowIntro(false), 1650);
+    return () => window.clearTimeout(introTimer);
+  }, []);
 
   const isDiscoverActive =
     currentScreen === 'discover' || currentScreen === 'search-people';
@@ -53,6 +59,17 @@ export const AppShell: React.FC<AppShellProps> = ({
 
   return (
     <div className="min-h-[100dvh] bg-surface text-on-surface">
+      {showIntro && (
+        <div className="gupshup-intro fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-[#17145b] via-[#3025a8] to-[#087f83] text-white" aria-label="Gupshup loading" role="status">
+          <div className="gupshup-intro-content flex flex-col items-center gap-4">
+            <div className="gupshup-intro-logo w-24 h-24 rounded-[30px] bg-white/15 border border-white/25 shadow-2xl backdrop-blur-md flex items-center justify-center">
+              <span className="material-symbols-outlined icon-filled text-[54px]">forum</span>
+            </div>
+            <div className="text-3xl font-extrabold tracking-tight">Gupshup</div>
+            <div className="gupshup-intro-loader"><span /></div>
+          </div>
+        </div>
+      )}
       {/* Desktop Left Sidebar (lg+) */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-full w-60 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex-col justify-between py-6 px-4">
         <div className="flex flex-col gap-6">
@@ -235,7 +252,7 @@ export const AppShell: React.FC<AppShellProps> = ({
           </button>
 
           {showNotifs && (
-            <div className="absolute right-0 top-12 w-72 bg-surface-container-lowest rounded-2xl shadow-xl p-4 border border-outline-variant/30 z-50">
+            <div className="absolute right-0 top-12 w-72 bg-surface-container-lowest rounded-2xl shadow-xl p-4 border border-outline-variant/30 z-50 gupshup-notification-enter">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-on-surface">Notifications</span>
                 <button
