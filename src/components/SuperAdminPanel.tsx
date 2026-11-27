@@ -36,15 +36,17 @@ export const SuperAdminPanel: React.FC<{ email: string; onSignOut: () => void }>
       return;
     }
     setAuthorized(true);
-    const [memberResult, auditResult] = await Promise.all([
-      supabase.from('profiles')
-        .select('id, username, created_at, last_seen_at, member_moderation(is_verified,banned_at)')
-        .order('created_at', { ascending: false }),
-      supabase.from('admin_audit_log').select('id, action, created_at, target_user_id')
-        .order('created_at', { ascending: false }).limit(30),
+    const [memberResult, moderationResult, auditResult] = await Promise.all([
+      supabase.from('profiles').select('id, username, created_at, last_seen_at').order('created_at', { ascending: false }),
+      supabase.from('member_moderation').select('user_id, is_verified, banned_at'),
+      supabase.from('admin_audit_log').select('id, action, created_at, target_user_id').order('created_at', { ascending: false }).limit(30),
     ]);
     if (memberResult.error) setError(memberResult.error.message);
-    else setMembers((memberResult.data ?? []) as MemberRow[]);
+    else {
+      const moderation = new Map((moderationResult.data ?? []).map((row) => [row.user_id, row]));
+      setMembers((memberResult.data ?? []).map((row) => ({ ...row, member_moderation: moderation.has(row.id) ? [moderation.get(row.id)!] : [] })) as MemberRow[]);
+    }
+    if (moderationResult.error) setError(moderationResult.error.message);
     if (!auditResult.error) setAudit((auditResult.data ?? []) as AuditRow[]);
     setLoading(false);
   }, []);
