@@ -337,6 +337,16 @@ export default function App() {
 
   // Toast
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>(() => {
+    if (typeof window === 'undefined' || !('Notification' in window)) return 'unsupported';
+    return Notification.permission;
+  });
+  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+  const [incomingNotification, setIncomingNotification] = useState<{
+    chatId: string;
+    senderName: string;
+    preview: string;
+  } | null>(null);
   const toastTimerRef = useRef<number | null>(null);
   const presenceChannelRef = useRef<ReturnType<NonNullable<typeof supabase>['channel']> | null>(null);
 
@@ -350,6 +360,43 @@ export default function App() {
     },
     []
   );
+
+  useEffect(() => {
+    if (!supabaseSession?.user.id) {
+      setShowNotificationPrompt(false);
+      setIncomingNotification(null);
+      return;
+    }
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      setNotificationPermission('unsupported');
+      setShowNotificationPrompt(false);
+      return;
+    }
+    const permission = Notification.permission;
+    setNotificationPermission(permission);
+    setShowNotificationPrompt(permission === 'default');
+  }, [supabaseSession?.user.id]);
+
+  const handleEnableNotifications = async () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      setNotificationPermission('unsupported');
+      setShowNotificationPrompt(false);
+      showToast('This browser does not support notifications.');
+      return;
+    }
+    try {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      setShowNotificationPrompt(false);
+      if (permission === 'granted') {
+        showToast('Notifications are enabled.');
+      } else {
+        showToast('Notifications are still turned off. You can enable them in browser settings.');
+      }
+    } catch {
+      showToast('Could not request notification permission. Please check browser settings.');
+    }
+  };
 
   const contactsById = useMemo(() => {
     const map: Record<string, ContactUser> = {};
@@ -717,6 +764,37 @@ export default function App() {
       if (row.sender_id !== userId && row.receiver_id !== userId) return;
       const mapped = await mapDatabaseMessage(row, userId);
 
+      if (row.receiver_id === userId && row.sender_id !== userId) {
+        const senderName = contacts.find((contact) => contact.id === row.sender_id)?.username ?? 'Gupshup member';
+        const preview = row.kind === 'photo'
+          ? 'Sent you a photo'
+          : row.kind === 'voice'
+            ? 'Sent you a voice message'
+            : row.kind === 'drive_file'
+              ? 'Shared a file with you'
+              : (row.body || 'Sent you a message');
+        setIncomingNotification({ chatId: mapped.chatId, senderName, preview });
+
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+          try {
+            const notice = new Notification(`New message from ${senderName}`, {
+              body: preview,
+              icon: '/pwa-192x192.png',
+              tag: `gupshup-message-${row.id}`,
+            });
+            notice.onclick = () => {
+              window.focus();
+              setActiveChatId(mapped.chatId);
+              setScreen('chat');
+              setIncomingNotification(null);
+              notice.close();
+            };
+          } catch (error) {
+            console.warn('Could not show message notification:', error);
+          }
+        }
+      }
+
       setMessagesByChat((prev) => {
         const current = prev[mapped.chatId] ?? [];
         if (current.some((message) => message.id === mapped.message.id)) return prev;
@@ -833,7 +911,7 @@ export default function App() {
       active = false;
       void supabase.removeChannel(channel);
     };
-  }, [supabaseSession?.user.id, showToast]);
+  }, [supabaseSession?.user.id, showToast, contacts]);
 
   /* --------------------------- Auth & Navigation --------------------------- */
   const handleGoogleSignIn = async () => {
@@ -1533,6 +1611,70 @@ export default function App() {
 
   return (
     <>
+      {showNotificationPrompt && notificationPermission === 'default' && (
+        <div
+          role="dialog"
+          aria-live="polite"
+          aria-label="Enable Gupshup notifications"
+          className="fixed top-3 left-1/2 -translate-x-1/2 z-[95] w-[min(92vw,440px)] rounded-2xl border border-outline-variant bg-surface-container-lowest p-4 shadow-2xl"
+        >
+          <div className="flex items-start gap-3">
+            <span className="material-symbols-outlined rounded-xl bg-primary-container p-2 text-white">notifications_active</span>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-on-surface">Turn on notifications</p>
+              <p className="mt-1 text-sm text-on-surface-variant">Get an alert when someone sends you a new message.</p>
+              <div className="mt-3 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void handleEnableNotifications()}
+                  className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+                >
+                  Allow notifications
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowNotificationPrompt(false)}
+                  className="rounded-xl px-3 py-2 text-sm font-medium text-on-surface-variant hover:bg-surface-container"
+                >
+                  Not now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {incomingNotification && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-3 left-1/2 -translate-x-1/2 z-[96] w-[min(92vw,440px)] rounded-2xl border border-outline-variant bg-surface-container-lowest p-3 shadow-2xl"
+        >
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveChatId(incomingNotification.chatId);
+                setScreen('chat');
+                setIncomingNotification(null);
+              }}
+              className="min-w-0 flex-1 text-left"
+            >
+              <p className="text-sm font-bold text-on-surface">{incomingNotification.senderName}</p>
+              <p className="truncate text-sm text-on-surface-variant">{incomingNotification.preview}</p>
+            </button>
+            <button
+              type="button"
+              aria-label="Dismiss notification"
+              onClick={() => setIncomingNotification(null)}
+              className="rounded-lg p-2 text-on-surface-variant hover:bg-surface-container"
+            >
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <AppShell
         currentScreen={screen}
         user={user}
