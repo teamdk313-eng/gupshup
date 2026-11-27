@@ -46,8 +46,14 @@ export const PRIVACY_SECTIONS = [
     body: 'Your active profile and message history remain available while your account is active. Choosing Delete Account in Settings permanently purges your profile, @handle, messages, media attachments, and contact lists.',
   },
   {
-    id: 'contact',
+    id: 'activity-metrics',
     number: '06',
+    title: 'Activity metrics and safety signals',
+    body: 'Gupshup records approximate active app minutes while the app is visible and recently used, plus daily counts of messages sent and received and the number of chat partners. Super Admin can see these aggregate account metrics and automated high-volume signals. Private message text, photos, and voice notes are not included in activity reports or shown to Super Admin through this feature.',
+  },
+  {
+    id: 'contact',
+    number: '07',
     title: 'Contact',
     body: 'For privacy questions, data requests, or safety concerns, reach out to our privacy team at support@gupshup.app.',
   },
