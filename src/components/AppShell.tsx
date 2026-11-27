@@ -331,7 +331,9 @@ export const AppShell: React.FC<AppShellProps> = ({
           hideMobileBottomNav ? 'pb-0' : 'pb-16'
         } lg:pb-0 min-h-screen`}
       >
-        {children}
+        <div key={currentScreen} className="gupshup-screen-enter">
+          {children}
+        </div>
       </div>
 
       {/* Mobile Bottom Tab Bar (< lg) */}
