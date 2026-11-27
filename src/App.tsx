@@ -1862,6 +1862,7 @@ export default function App() {
           <ChatsAndThreadView
             mode={screen}
             user={user}
+            currentUserId={supabaseSession?.user.id ?? ''}
             chats={chats}
             contacts={contacts}
             contactsById={contactsById}
