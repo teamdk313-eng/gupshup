@@ -752,6 +752,7 @@ export const ChatsAndThreadView: React.FC<ChatsAndThreadViewProps> = ({
                               ? `last seen ${new Date(activeContact.lastSeenAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`
                               : `@${activeContact.username}`}
                     </div>
+                    <div className="text-[10px] text-primary font-medium">⏳ پیغامات اور میڈیا 24 گھنٹے بعد خودکار حذف ہوں گے</div>
                   </div>
                 </button>
               </div>
