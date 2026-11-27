@@ -61,9 +61,9 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
   const searchable = contacts.filter((c) => !blockedIds.has(c.id));
   const trimmed = query.trim();
   const matches = trimmed ? filterPeopleDirectory(searchable, trimmed) : [];
-  const suggestions = searchable
-    .filter((c) => !dismissedIds.includes(c.id))
-    .slice(0, 6);
+  const suggestions = trimmed
+    ? []
+    : searchable.filter((c) => !dismissedIds.includes(c.id)).slice(0, 6);
 
   const handleSelectContact = (contact: ContactUser) => {
     onAddRecentSearch(contact.username);
@@ -231,7 +231,12 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
           </div>
         )
       ) : (
-        <div>
+        <div className="bg-surface-container-lowest rounded-2xl p-8 text-center border border-outline-variant/15">
+          <div className="text-sm font-semibold text-on-surface">Search for a username</div>
+          <p className="text-xs text-on-surface-variant mt-1">Members only appear after you search by @username.</p>
+        </div>
+
+        {false && <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-on-surface">Gupshup member IDs</h3>
             <span className="text-xs text-on-surface-variant">Public usernames only</span>
@@ -287,7 +292,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
               </div>
             ))}
           </div>
-        </div>
+        </div>}
       )}
     </div>
   );
