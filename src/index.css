@@ -141,3 +141,38 @@
 @media (prefers-reduced-motion: reduce) {
   .gupshup-screen-enter, .gupshup-message-in, .gupshup-message-send, .gupshup-menu-in, .gupshup-speaking-bars i, .animate-\\[gupshup-message-in_260ms_cubic-bezier\\(\\.2\\,\\.8\\,\\.2\\,1\\)_both\\] { animation: none !important; }
 }
+
+@keyframes gupshup-intro-backdrop {
+  0% { opacity: 1; }
+  78% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+@keyframes gupshup-intro-logo {
+  0% { opacity: 0; transform: translateY(18px) scale(.72) rotate(-9deg); filter: blur(8px); }
+  55% { opacity: 1; transform: translateY(-4px) scale(1.06) rotate(2deg); filter: blur(0); }
+  75% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes gupshup-intro-content {
+  0% { opacity: 0; transform: translateY(14px); }
+  35%, 85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes gupshup-loader {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(220%); }
+}
+@keyframes gupshup-notification-enter {
+  from { opacity: 0; transform: translateY(-8px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.gupshup-intro { animation: gupshup-intro-backdrop 1650ms ease forwards; }
+.gupshup-intro-content { animation: gupshup-intro-content 1500ms ease both; }
+.gupshup-intro-logo { animation: gupshup-intro-logo 900ms cubic-bezier(.2,.85,.25,1) both; }
+.gupshup-intro-loader { width: 92px; height: 3px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.22); }
+.gupshup-intro-loader span { display: block; width: 45%; height: 100%; border-radius: inherit; background: white; animation: gupshup-loader 900ms ease-in-out infinite; }
+.gupshup-notification-enter { transform-origin: top right; animation: gupshup-notification-enter 190ms cubic-bezier(.2,.8,.2,1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .gupshup-intro, .gupshup-intro-content, .gupshup-intro-logo, .gupshup-intro-loader span, .gupshup-notification-enter { animation: none !important; }
+  .gupshup-intro { display: none; }
+}
