@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js';
 import { AppShell } from './components/AppShell';
 import { AttachmentModal } from './components/AttachmentModal';
 import { ChatsAndThreadView } from './components/ChatsAndThreadView';
+import { AIChatView } from './components/AIChatView';
 import { ConfirmModal } from './components/ConfirmModal';
 import { ContactInfoView } from './components/ContactInfoView';
 import { DiscoverView } from './components/DiscoverView';
@@ -81,6 +82,7 @@ const VALID_APP_SCREENS: AppScreen[] = [
   'search-people',
   'chats',
   'chat',
+  'ai-chat',
   'contact-info',
   'profile',
   'edit-profile',
@@ -1590,6 +1592,7 @@ export default function App() {
     discover: 'Discover',
     'search-people': 'Search People',
     chats: 'Messages',
+    'ai-chat': 'Gupshup AI',
     'contact-info': 'Contact Info',
     profile: 'My Profile',
     'edit-profile': 'Edit Profile',
@@ -1747,6 +1750,10 @@ export default function App() {
             onOpenImageViewer={(msg) => setViewerMessage(msg)}
             onRequestBackupToDrive={handleRequestBackupSingleChat}
           />
+        )}
+
+        {screen === 'ai-chat' && supabaseSession && (
+          <AIChatView accessToken={supabaseSession.access_token} userName={user.name} />
         )}
 
         {screen === 'contact-info' && activeContactForContactInfo && (
