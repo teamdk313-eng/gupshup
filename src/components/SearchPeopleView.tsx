@@ -231,6 +231,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
           </div>
         )
       ) : (
+        <>
         <div className="bg-surface-container-lowest rounded-2xl p-8 text-center border border-outline-variant/15">
           <div className="text-sm font-semibold text-on-surface">Search for a username</div>
           <p className="text-xs text-on-surface-variant mt-1">Members only appear after you search by @username.</p>
@@ -293,6 +294,7 @@ export const SearchPeopleView: React.FC<SearchPeopleViewProps> = ({
             ))}
           </div>
         </div>}
+        </>
       )}
     </div>
   );
