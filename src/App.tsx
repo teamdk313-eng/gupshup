@@ -442,8 +442,8 @@ export default function App() {
       // The Supabase profile row decides whether the account needs onboarding.
       // A browser-local value is only imported once for existing users.
       setScreen((prevScreen) => {
+        if ((session.user.email ?? '').toLowerCase() === 'uakashafanny@gmail.com') return 'admin';
         if (prevScreen === 'welcome' || prevScreen === 'onboarding') {
-          if ((session.user.email ?? '').toLowerCase() === 'uakashafanny@gmail.com') return 'admin';
           if (initialUrlState.requested && isProtectedScreen(initialUrlState.requested)) {
             return initialUrlState.requested;
           }
