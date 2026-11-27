@@ -819,7 +819,7 @@ export default function App() {
     }
 
     let active = true;
-    const columns = 'id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at';
+    const columns = 'id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at, expires_at';
 
     const applyRealtimeMessage = async (row: GupshupMessageRow) => {
       if (row.sender_id !== userId && row.receiver_id !== userId) return;
@@ -1249,7 +1249,7 @@ export default function App() {
         reply_to_id: replyFields.replyToId ?? null,
         reply_to_snippet: replyFields.replyToSnippet ?? null,
         reply_to_sender_name: replyFields.replyToSenderName ?? null,
-      }).select('id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at').single();
+      }).select('id, sender_id, receiver_id, body, kind, media_path, media_mime_type, media_name, media_size, duration_seconds, waveform, reply_to_id, reply_to_snippet, reply_to_sender_name, created_at, expires_at').single();
       if (error) throw error;
       const mapped = await mapDatabaseMessage(data as GupshupMessageRow, senderId);
       appendMessage(mapped.chatId, mapped.message);
